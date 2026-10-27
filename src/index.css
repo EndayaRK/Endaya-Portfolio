@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Warm Studio Cream × OLED Charcoal — Design Token Layer ─────────── */
+
+:root {
+  /* ── Light Mode: Warm Studio Cream ─────────────────────────────────── */
+  --c-bg:               251 249 245;   /* #FBF9F5 — Warm Cream / Soft Linen      */
+  --c-surface:          255 255 255;   /* #FFFFFF — Pure White card tiles         */
+  --c-surface-elevated: 255 255 255;
+  --c-surface-strong:   239 236 230;   /* #EFECE6 — Warm Sand (secondary surface) */
+  --c-surface-contrast: 247 245 241;   /* slightly warmer mid-ground              */
+
+  --c-line:             239 236 230;   /* #EFECE6 — Subtle Warm Sand border       */
+  --c-line-subtle:      245 243 238;
+
+  --c-text:             26  26  24;    /* #1A1A18 — Charcoal Black                */
+  --c-muted:            115 113 107;   /* #73716B — Warm Taupe Gray               */
+
+  --c-primary-cta:      26  26  24;    /* #1A1A18 */
+  --c-primary-cta-text: 255 255 255;
+  --c-secondary-cta:    239 236 230;   /* #EFECE6 */
+  --c-secondary-cta-text: 26 26 24;
+
+  --c-overlay: 26 26 24;
+}
+
+
+/* ─── Warm Studio Cream × OLED Charcoal — Design Token Layer ─────────── */
+
+:root {
+  /* ── Light Mode: Warm Studio Cream ─────────────────────────────────── */
+  --c-bg:               251 249 245;   /* #FBF9F5 — Warm Cream / Soft Linen      */
+  --c-surface:          255 255 255;   /* #FFFFFF — Pure White card tiles         */
+  --c-surface-elevated: 255 255 255;
+  --c-surface-strong:   239 236 230;   /* #EFECE6 — Warm Sand (secondary surface) */
+  --c-surface-contrast: 247 245 241;   /* slightly warmer mid-ground              */
+
+  --c-line:             239 236 230;   /* #EFECE6 — Subtle Warm Sand border       */
+  --c-line-subtle:      245 243 238;
+
+  --c-text:             26  26  24;    /* #1A1A18 — Charcoal Black                */
+  --c-muted:            115 113 107;   /* #73716B — Warm Taupe Gray               */
+
+  --c-primary-cta:      26  26  24;    /* #1A1A18 */
+  --c-primary-cta-text: 255 255 255;
+  --c-secondary-cta:    239 236 230;   /* #EFECE6 */
+  --c-secondary-cta-text: 26 26 24;
+
+  --c-overlay: 26 26 24;
+}
+
+.dark {
+  /* ── Dark Mode: OLED Charcoal ───────────────────────────────────────── */
+  --c-bg:               10  10  12;    /* #0A0A0C — Deep matte charcoal           */
+  --c-surface:          20  20  22;    /* #141416 — Slightly elevated dark tile   */
+  --c-surface-elevated: 24  24  28;
+  --c-surface-strong:   31  31  35;    /* #1F1F23                                 */
+  --c-surface-contrast: 14  14  16;
+
+  --c-line:             34  34  38;    /* #222226 — Subtle 1px dark border        */
+  --c-line-subtle:      26  26  30;
+
+  --c-text:             243 243 245;   /* #F3F3F5 — Soft off-white, glare-free    */
+  --c-muted:            138 138 147;   /* #8A8A93 — Soft neutral gray             */
+
+  --c-primary-cta:      243 243 245;   /* #F3F3F5 */
+  --c-primary-cta-text: 10  10  12;    /* #0A0A0C */
+  --c-secondary-cta:    31  31  35;    /* #1F1F23 */
+  --c-secondary-cta-text: 243 243 245;
+
+  --c-overlay: 10 10 12;
+}
+
+/* ─── Base ─── */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-text));
+  transition: background-color 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+::selection {
+  background-color: rgb(var(--c-text) / 0.10);
+  color: rgb(var(--c-text));
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-text) / 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Scrollbar ─── */
+
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: rgb(var(--c-bg)); }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted) / 0.45);
+}
+
+/* ─── Keyframes ─── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.90); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+.dark {
+  /* ── Dark Mode: OLED Charcoal ───────────────────────────────────────── */
+  --c-bg:               10  10  12;    /* #0A0A0C — Deep matte charcoal           */
+  --c-surface:          20  20  22;    /* #141416 — Slightly elevated dark tile   */
+  --c-surface-elevated: 24  24  28;
+  --c-surface-strong:   31  31  35;    /* #1F1F23                                 */
+  --c-surface-contrast: 14  14  16;
+
+  --c-line:             34  34  38;    /* #222226 — Subtle 1px dark border        */
+  --c-line-subtle:      26  26  30;
+
+  --c-text:             243 243 245;   /* #F3F3F5 — Soft off-white, glare-free    */
+  --c-muted:            138 138 147;   /* #8A8A93 — Soft neutral gray             */
+
+  --c-primary-cta:      243 243 245;   /* #F3F3F5 */
+  --c-primary-cta-text: 10  10  12;    /* #0A0A0C */
+  --c-secondary-cta:    31  31  35;    /* #1F1F23 */
+  --c-secondary-cta-text: 243 243 245;
+
+  --c-overlay: 10 10 12;
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-text));
+  transition: background-color 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+::selection {
+  background-color: rgb(var(--c-text) / 0.10);
+  color: rgb(var(--c-text));
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-text) / 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: rgb(var(--c-bg)); }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted) / 0.45);
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.90); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

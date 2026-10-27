@@ -1,0 +1,16 @@
+Drop your certificate image files in this folder (jpg/png, scans or screenshots are fine).
+
+Then, for each one, add an entry to the `certificates` array in src/data.ts, e.g.:
+
+{
+  id: "aws-cloud-practitioner",
+  title: "AWS Certified Cloud Practitioner",
+  issuer: "Amazon Web Services",
+  date: "2026",
+  category: "Cloud",
+  credentialUrl: "https://www.credly.com/...",   // optional
+  image: "/certificates/aws-cloud-practitioner.jpg",
+}
+
+The category field controls the filter pills on the Certificates section automatically —
+a new category name just shows up as a new filter, no other code changes needed.
