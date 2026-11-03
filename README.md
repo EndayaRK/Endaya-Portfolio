@@ -1,5 +1,7 @@
 # Rhon Kelly Endaya — Developer Portfolio
 
+[![Continuous Integration](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml)
+
 A modern, minimal, high-impact personal developer portfolio built with React, TypeScript, Vite, and Tailwind CSS.
 
 ## Design Philosophy: Minimal Surface, Maximum Impact

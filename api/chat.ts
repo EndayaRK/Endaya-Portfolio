@@ -105,37 +105,21 @@ export default async function handler(req: VercelRequest, res?: VercelResponse) 
   // Initialize official @google/genai SDK
   const ai = new GoogleGenAI({ apiKey });
 
-  // Targeted lightweight model with fallback
-  const PRIMARY_MODEL = "gemini-2.5-flash-lite";
-  const FALLBACK_MODEL = "gemini-1.5-flash-8b";
+  // Targeted lightweight Flash-Lite models in order of priority
+  const CANDIDATE_MODELS = [
+    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash-8b",
+  ];
 
-  try {
-    // Attempt Primary lightweight model: gemini-2.5-flash-lite
-    const response = await ai.models.generateContent({
-      model: PRIMARY_MODEL,
-      contents: trimmedQuery,
-      config: {
-        temperature: 0.3,
-        maxOutputTokens: 300,
-        systemInstruction: SYSTEM_INSTRUCTION,
-      },
-    });
+  let lastError: any = null;
 
-    const reply = response.text || "";
-    return sendResponse(res, 200, {
-      reply,
-      model: PRIMARY_MODEL,
-    });
-  } catch (primaryError: any) {
-    console.warn(
-      `Primary model [${PRIMARY_MODEL}] failed. Attempting fallback [${FALLBACK_MODEL}]:`,
-      primaryError?.message || primaryError
-    );
-
+  for (const model of CANDIDATE_MODELS) {
     try {
-      // Fallback model: gemini-1.5-flash-8b
-      const fallbackResponse = await ai.models.generateContent({
-        model: FALLBACK_MODEL,
+      const response = await ai.models.generateContent({
+        model,
         contents: trimmedQuery,
         config: {
           temperature: 0.3,
@@ -144,19 +128,22 @@ export default async function handler(req: VercelRequest, res?: VercelResponse) 
         },
       });
 
-      const fallbackReply = fallbackResponse.text || "";
+      const reply = response.text || "";
       return sendResponse(res, 200, {
-        reply: fallbackReply,
-        model: FALLBACK_MODEL,
+        reply,
+        model,
       });
-    } catch (fallbackError: any) {
-      console.error("Gemini API Error across both models:", fallbackError);
-      return sendResponse(res, 502, {
-        error:
-          fallbackError?.message ||
-          "Failed to receive a response from the Gemini AI service. Please try again shortly.",
-      });
+    } catch (err: any) {
+      console.warn(`Model [${model}] failed:`, err?.message || err);
+      lastError = err;
     }
   }
+
+  console.error("Gemini API Error across candidate models:", lastError);
+  return sendResponse(res, 502, {
+    error:
+      lastError?.message ||
+      "Failed to receive a response from the Gemini AI service. Please try again shortly.",
+  });
 }
 
