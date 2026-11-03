@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navigation from "./components/Navigation";
+import AmbientBackground from "./components/AmbientBackground";
 import Hero from "./components/Hero";
 import ProfessionalOverview from "./components/ProfessionalOverview";
 import Projects from "./components/Projects";
@@ -36,12 +37,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg text-ink selection:bg-ink/10 selection:text-ink relative overflow-x-hidden">
+    <div className="min-h-screen bg-band-primary text-ink selection:bg-ink/10 selection:text-ink relative overflow-x-hidden">
+      {/* Ambient Background with SVG Grid and Drifting Radial Blur Glows */}
+      <AmbientBackground />
 
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content */}
+      {/* Main Content with Alternating Section Bands */}
       <main className="relative z-10">
         <Hero />
         <ProfessionalOverview />

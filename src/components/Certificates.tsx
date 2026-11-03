@@ -1,96 +1,327 @@
-import { useEffect, useMemo, useState } from "react";
-import { Award, CheckCircle, ExternalLink, FileText, Filter, GraduationCap, ShieldCheck, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Award,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  FileText,
+  Filter,
+  GraduationCap,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import { certificates } from "../data";
 import type { Certificate } from "../data";
 
 export default function Certificates() {
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(certificates.map((c) => c.category)))],
-    []
-  );
+  // Category list with canonical order
+  const categories = useMemo(() => {
+    const rawCategories = Array.from(new Set(certificates.map((c) => c.category)));
+    const preferredOrder = [
+      "All",
+      "Programming",
+      "IT Support & Operations",
+      "Academic Honors",
+    ];
+    const ordered = preferredOrder.filter((cat) => cat === "All" || rawCategories.includes(cat));
+    rawCategories.forEach((cat) => {
+      if (!ordered.includes(cat)) ordered.push(cat);
+    });
+    return ordered;
+  }, []);
 
   const [activeCategory, setActiveCategory] = useState("All");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selected, setSelected] = useState<Certificate | null>(null);
 
-  const visibleCertificates =
-    activeCategory === "All"
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isProgrammaticScroll = useRef(false);
+
+  const visibleCertificates = useMemo(() => {
+    return activeCategory === "All"
       ? certificates
       : certificates.filter((c) => c.category === activeCategory);
+  }, [activeCategory]);
 
+  // Center target card smoothly in viewport
+  const scrollToCard = useCallback((index: number, smooth = true) => {
+    const container = scrollContainerRef.current;
+    const card = cardRefs.current[index];
+    if (!container || !card) return;
+
+    isProgrammaticScroll.current = true;
+    setActiveIndex(index);
+
+    const containerWidth = container.clientWidth;
+    const cardLeft = card.offsetLeft;
+    const cardWidth = card.clientWidth;
+    const targetScrollLeft = cardLeft - containerWidth / 2 + cardWidth / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      behavior: smooth ? "smooth" : "auto",
+    });
+
+    const timer = window.setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 450);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Handle category change: reset to first card
+  const handleSelectCategory = (cat: string) => {
+    setActiveCategory(cat);
+    setActiveIndex(0);
+    window.setTimeout(() => {
+      scrollToCard(0, true);
+    }, 50);
+  };
+
+  // Keep centered on mount and resize
   useEffect(() => {
-    if (!selected) return;
-    function onKeyDown(e: globalThis.KeyboardEvent) {
-      if (e.key === "Escape") setSelected(null);
+    const timer = window.setTimeout(() => {
+      scrollToCard(activeIndex, false);
+    }, 100);
+
+    const onResize = () => {
+      scrollToCard(activeIndex, false);
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [activeIndex, scrollToCard]);
+
+  // Handle manual scroll/touch: determine center card
+  const handleScroll = () => {
+    if (isProgrammaticScroll.current) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    cardRefs.current.forEach((card, idx) => {
+      if (!card) return;
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    if (closestIndex !== activeIndex) {
+      setActiveIndex(closestIndex);
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selected]);
+  };
+
+  // Console Keyboard Listener: D-Pad navigation (ArrowLeft / ArrowRight) & Action (Enter / Space / X)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // If modal is open, let Escape close it
+      if (selected) {
+        if (e.key === "Escape") setSelected(null);
+        return;
+      }
+
+      // Check if user is typing in an input
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        const prev = Math.max(0, activeIndex - 1);
+        scrollToCard(prev, true);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        const next = Math.min(visibleCertificates.length - 1, activeIndex + 1);
+        scrollToCard(next, true);
+      } else if (e.key === "Enter" || e.key === " " || e.key.toLowerCase() === "x") {
+        if (visibleCertificates[activeIndex]) {
+          e.preventDefault();
+          setSelected(visibleCertificates[activeIndex]);
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selected, activeIndex, visibleCertificates, scrollToCard]);
+
+  const activeCert = visibleCertificates[activeIndex];
 
   return (
-    <section id="certificates" className="py-20 lg:py-28 border-b border-border bg-bg">
-      <div className="max-w-site mx-auto px-6 md:px-10">
+    <section
+      id="certificates"
+      className="py-20 lg:py-28 border-b border-black/5 dark:border-white/5 bg-[#F3EFEA] dark:bg-[#121216] relative transition-colors duration-300 overflow-hidden select-none"
+    >
+      {/* ── Background Sine Wave (Authentic PSP XMB Wave hommage) ── */}
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden flex items-center justify-center opacity-[0.03] dark:opacity-[0.04]"
+        aria-hidden="true"
+      >
+        <div className="w-[200%] h-full flex items-center animate-psp-wave transform-gpu">
+          <svg
+            className="w-full h-80 sm:h-96 text-ink"
+            viewBox="0 0 2400 320"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+          >
+            {/* Primary Flowing Sine Ribbon */}
+            <path
+              d="M0 160 C 300 60, 600 260, 900 160 C 1200 60, 1500 260, 1800 160 C 2100 60, 2400 260, 2700 160"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            {/* Secondary Harmonious Wave */}
+            <path
+              d="M0 180 C 350 270, 650 90, 950 180 C 1250 270, 1550 90, 1850 180 C 2150 270, 2450 90, 2750 180"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeDasharray="8 6"
+            />
+            {/* Ambient Base Ribbon */}
+            <path
+              d="M0 140 C 400 80, 700 230, 1100 140 C 1500 50, 1800 240, 2200 140 C 2600 40, 2900 240, 3300 140"
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+          </svg>
+        </div>
+      </div>
 
+      <div className="max-w-site mx-auto px-6 md:px-10 relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-border">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-black/5 dark:border-white/5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
-              Verified Qualifications
-            </p>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-ink animate-pulse" />
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+                Console XMB · Verified Credentials
+              </p>
+            </div>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
               Certificates & Honors
             </h2>
             <p className="text-sm sm:text-base text-muted mt-2 max-w-xl leading-relaxed">
               Official academic recognitions and verified technical coursework certifications earned
-              during my BSIT degree. Click any credential to inspect details or view official
-              documents.
+              during my BSIT degree. Click any credential to inspect details or view official documents.
             </p>
           </div>
 
-          {/* Filter Pills */}
+          {/* Category Filter Rail */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-muted flex items-center gap-1.5">
+            <span className="text-xs font-medium text-muted flex items-center gap-1.5 mr-1">
               <Filter size={12} />
-              Category
+              Filter
             </span>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`text-xs font-semibold rounded-full px-3.5 py-1.5 border transition-all ${
-                  activeCategory === cat
-                    ? "border-ink bg-ink text-cta-primary-text shadow-sm"
-                    : "border-border bg-surface text-muted hover:text-ink hover:border-ink/40"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => handleSelectCategory(cat)}
+                  className={`text-xs font-semibold rounded-full px-4 py-1.5 border transition-all duration-200 ${
+                    isActive
+                      ? "border-ink bg-ink text-cta-primary-text shadow-sm scale-[1.02]"
+                      : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#16161A]/80 backdrop-blur-md text-muted hover:text-ink hover:border-black/20 dark:hover:border-white/20"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
+      </div>
 
-        {/* Certificate Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
-          {visibleCertificates.map((cert) => (
-            <button
-              key={cert.id}
-              type="button"
-              onClick={() => setSelected(cert)}
-              className="text-left rounded-2xl border border-border bg-surface p-5 flex flex-col justify-between transition-all duration-200 hover:border-ink/40 hover:-translate-y-1 hover:shadow-[0_8px_24px_-8px_rgb(0_0_0/0.10)] dark:hover:shadow-[0_8px_24px_-8px_rgb(0_0_0/0.4)] group"
-            >
-              <div>
-                {/* Image / Fallback */}
-                <div className="aspect-[16/10] rounded-xl bg-surface-strong border border-border flex items-center justify-center p-2.5 relative overflow-hidden transition-colors">
+      {/* ── Console Ribbon Carousel (UMD Cover Flow) ── */}
+      <div className="relative mt-10 w-full overflow-hidden">
+        {/* Hardware-Inspired D-Pad Navigation Buttons (< and >) */}
+        <button
+          type="button"
+          onClick={() => scrollToCard(Math.max(0, activeIndex - 1), true)}
+          disabled={activeIndex === 0}
+          aria-label="Previous certificate (ArrowLeft)"
+          className={`absolute left-3 sm:left-6 lg:left-10 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full border border-black/10 dark:border-white/15 bg-white/80 dark:bg-[#18181C]/90 backdrop-blur-md shadow-lg text-ink flex items-center justify-center transition-all ${
+            activeIndex === 0
+              ? "opacity-20 cursor-not-allowed"
+              : "hover:scale-110 active:scale-95 hover:bg-white dark:hover:bg-[#202026] hover:border-black/30 dark:hover:border-white/30"
+          }`}
+        >
+          <ChevronLeft size={20} strokeWidth={2.5} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            scrollToCard(Math.min(visibleCertificates.length - 1, activeIndex + 1), true)
+          }
+          disabled={activeIndex === visibleCertificates.length - 1}
+          aria-label="Next certificate (ArrowRight)"
+          className={`absolute right-3 sm:right-6 lg:right-10 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full border border-black/10 dark:border-white/15 bg-white/80 dark:bg-[#18181C]/90 backdrop-blur-md shadow-lg text-ink flex items-center justify-center transition-all ${
+            activeIndex === visibleCertificates.length - 1
+              ? "opacity-20 cursor-not-allowed"
+              : "hover:scale-110 active:scale-95 hover:bg-white dark:hover:bg-[#202026] hover:border-black/30 dark:hover:border-white/30"
+          }`}
+        >
+          <ChevronRight size={20} strokeWidth={2.5} />
+        </button>
+
+        {/* Horizontal Console Scroll Track */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex items-center gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory py-10 px-[15vw] sm:px-[25vw] lg:px-[33vw] scrollbar-none scroll-smooth focus:outline-none"
+          tabIndex={0}
+          aria-label="Certificates Cover Flow"
+        >
+          {visibleCertificates.map((cert, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <div
+                key={cert.id}
+                ref={(el) => (cardRefs.current[index] = el)}
+                onClick={() => {
+                  if (isActive) {
+                    setSelected(cert);
+                  } else {
+                    scrollToCard(index, true);
+                  }
+                }}
+                className={`snap-center flex-shrink-0 transition-all duration-300 transform-gpu cursor-pointer ${
+                  isActive
+                    ? "scale-105 z-20 opacity-100 shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.65)] bg-white/90 dark:bg-[#16161A]/95 backdrop-blur-xl border border-black/10 dark:border-white/20 rounded-2xl p-4 sm:p-5 min-w-[320px] sm:min-w-[440px] max-w-[460px]"
+                    : "scale-90 z-10 opacity-30 blur-[0.5px] hover:opacity-60 bg-white/70 dark:bg-[#16161A]/80 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-4 sm:p-5 min-w-[320px] sm:min-w-[440px] max-w-[460px]"
+                }`}
+              >
+                {/* Visual Media Header */}
+                <div className="aspect-[16/10] rounded-xl bg-surface-strong border border-black/5 dark:border-white/10 flex items-center justify-center p-2.5 relative overflow-hidden transition-colors">
                   {cert.image ? (
                     <img
                       src={cert.image}
                       alt={cert.title}
                       loading="lazy"
-                      className="w-full h-full object-contain rounded-lg group-hover:scale-[1.02] transition-transform duration-300"
+                      className="w-full h-full object-contain rounded-lg transition-transform duration-300"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-center p-3">
-                      <div className="w-12 h-12 rounded-full bg-surface border border-border text-ink flex items-center justify-center mb-2">
+                      <div className="w-12 h-12 rounded-full bg-surface border border-black/5 dark:border-white/10 text-ink flex items-center justify-center mb-2">
                         {cert.category === "Academic Honors" ? (
                           <GraduationCap size={24} />
                         ) : (
@@ -100,67 +331,128 @@ export default function Certificates() {
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
                         {cert.issuer}
                       </span>
-                      {cert.grade && (
-                        <span className="text-[11px] font-bold text-ink mt-1 bg-surface border border-border px-2 py-0.5 rounded-md">
-                          {cert.grade}
-                        </span>
-                      )}
                     </div>
                   )}
 
-                  {/* Category badge */}
-                  <span className="absolute top-2.5 right-2.5 text-[10px] font-semibold bg-surface/90 border border-border px-2 py-0.5 rounded-md text-muted backdrop-blur-sm shadow-sm">
+                  {/* Category Badge */}
+                  <span className="absolute top-2.5 right-2.5 text-[10px] font-semibold bg-white/85 dark:bg-[#18181C]/90 border border-black/5 dark:border-white/10 px-2.5 py-0.5 rounded-md text-muted backdrop-blur-sm shadow-xs">
                     {cert.category}
                   </span>
+
+                  {/* Active UMD Indicator */}
+                  {isActive && (
+                    <span className="absolute bottom-2.5 left-2.5 text-[9px] font-mono font-semibold tracking-wider bg-black/70 dark:bg-white/15 text-white px-2 py-0.5 rounded backdrop-blur-md">
+                      UMD #{String(index + 1).padStart(2, "0")}
+                    </span>
+                  )}
                 </div>
 
-                <h3 className="font-display text-base font-bold text-ink mt-4 group-hover:opacity-75 transition-opacity">
-                  {cert.title}
-                </h3>
-                <p className="text-xs text-muted mt-1">{cert.issuer}</p>
+                {/* Credential Meta */}
+                <div className="mt-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-display text-base sm:text-lg font-bold text-ink tracking-tight line-clamp-1">
+                      {cert.title}
+                    </h3>
+                    {cert.grade && (
+                      <span className="text-[11px] font-bold text-ink shrink-0 bg-surface-strong border border-black/5 dark:border-white/10 px-2 py-0.5 rounded-md">
+                        {cert.grade}
+                      </span>
+                    )}
+                  </div>
 
-                {cert.description && (
-                  <p className="text-xs text-muted mt-3 line-clamp-2 leading-relaxed">
-                    {cert.description}
-                  </p>
-                )}
-              </div>
+                  <p className="text-xs text-muted mt-1 font-medium">{cert.issuer}</p>
 
-              <div className="mt-5 pt-3 border-t border-border flex items-center justify-between text-xs text-muted">
-                <span className="font-medium">{cert.date}</span>
-                <span className="font-semibold text-ink group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
-                  Inspect <ExternalLink size={11} />
-                </span>
+                  <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-muted">
+                    <span className="font-mono">{cert.date}</span>
+                    <span
+                      className={`inline-flex items-center gap-1 font-semibold transition-colors ${
+                        isActive ? "text-ink underline" : "text-muted"
+                      }`}
+                    >
+                      Inspect
+                      <ExternalLink size={12} />
+                    </span>
+                  </div>
+                </div>
               </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Credential Modal */}
+      {/* ── PSP Console HUD & Bottom Action Hints ── */}
+      <div className="max-w-site mx-auto px-6 md:px-10 mt-6 relative z-10">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md shadow-sm">
+          {/* Left: Index Counter */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono font-bold tracking-widest text-ink">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(visibleCertificates.length).padStart(2, "0")}
+            </span>
+            <span className="text-[11px] text-muted hidden md:inline">
+              · {activeCert ? activeCert.title : ""}
+            </span>
+          </div>
+
+          {/* Center: Interactive Indicator Dots */}
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-[200px] sm:max-w-none">
+            {visibleCertificates.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollToCard(i, true)}
+                aria-label={`Jump to certificate ${i + 1}`}
+                className={`transition-all duration-200 rounded-full ${
+                  i === activeIndex
+                    ? "w-6 h-1.5 bg-ink"
+                    : "w-1.5 h-1.5 bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Right: Console Action Hints */}
+          <div className="flex items-center gap-3 text-xs font-mono text-muted">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+              <span className="font-bold text-ink">[ ← → ]</span> Select
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (activeCert) setSelected(activeCert);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-ink text-cta-primary-text font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
+            >
+              <span className="font-bold">[ ✕ ]</span> Inspect Credential ↗
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Detail Modal Dialog (Preserved Verification Overlay) ── */}
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-overlay/75 backdrop-blur-md animate-[fadeIn_0.2s_ease-out]"
-          onClick={() => setSelected(null)}
           role="dialog"
           aria-modal="true"
-          aria-label={selected.title}
+          aria-labelledby="cert-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]"
+          onClick={() => setSelected(null)}
         >
           <div
-            className="w-full max-w-xl rounded-2xl bg-surface border border-border shadow-2xl overflow-hidden animate-[fadeUp_0.2s_ease-out]"
+            className="w-full max-w-2xl rounded-2xl border border-black/5 dark:border-white/10 bg-white/95 dark:bg-[#141416]/98 backdrop-blur-xl shadow-2xl overflow-hidden animate-[fadeUp_0.2s_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-strong">
-              <span className="text-xs font-semibold text-muted flex items-center gap-1.5">
-                <ShieldCheck size={14} className="text-ink" />
-                Credential · {selected.category}
-              </span>
+            <div className="flex items-center justify-between p-5 border-b border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
+                <ShieldCheck size={14} />
+                <span>Verified Credential</span>
+              </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
                 aria-label="Close dialog"
-                className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-muted hover:text-ink hover:bg-surface-strong transition-colors"
+                className="w-8 h-8 rounded-full border border-black/5 dark:border-white/10 flex items-center justify-center text-muted hover:text-ink hover:bg-surface-strong transition-colors"
               >
                 <X size={15} />
               </button>
@@ -168,7 +460,7 @@ export default function Certificates() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              <div className="aspect-[16/10] rounded-xl bg-surface-strong border border-border flex items-center justify-center overflow-hidden p-3">
+              <div className="aspect-[16/10] rounded-xl bg-surface-strong border border-black/5 dark:border-white/10 flex items-center justify-center overflow-hidden p-3">
                 {selected.image ? (
                   <img
                     src={selected.image}
@@ -177,7 +469,7 @@ export default function Certificates() {
                   />
                 ) : (
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 rounded-full bg-surface border border-border text-ink flex items-center justify-center mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-full bg-surface border border-black/5 dark:border-white/10 text-ink flex items-center justify-center mx-auto mb-3">
                       {selected.category === "Academic Honors" ? (
                         <GraduationCap size={32} />
                       ) : (
@@ -193,26 +485,29 @@ export default function Certificates() {
               </div>
 
               <div>
-                <h3 className="font-display text-xl font-bold text-ink">{selected.title}</h3>
+                <h3 id="cert-modal-title" className="font-display text-xl font-bold text-ink">
+                  {selected.title}
+                </h3>
                 <p className="text-xs text-muted mt-1">
-                  Issued by <span className="font-semibold text-ink">{selected.issuer}</span> · {selected.date}
+                  Issued by <span className="font-semibold text-ink">{selected.issuer}</span> ·{" "}
+                  {selected.date}
                 </p>
 
                 {selected.grade && (
-                  <div className="mt-3 inline-flex items-center gap-2 text-xs bg-surface-strong border border-border text-ink px-3 py-1.5 rounded-lg font-semibold">
+                  <div className="mt-3 inline-flex items-center gap-2 text-xs bg-surface-strong border border-black/5 dark:border-white/10 text-ink px-3 py-1.5 rounded-lg font-semibold">
                     <CheckCircle size={13} />
                     Academic Grade: {selected.grade}
                   </div>
                 )}
 
                 {selected.description && (
-                  <p className="text-sm text-muted mt-4 leading-relaxed border-t border-border pt-3">
+                  <p className="text-sm text-muted mt-4 leading-relaxed border-t border-black/5 dark:border-white/5 pt-3">
                     {selected.description}
                   </p>
                 )}
 
                 {/* Actions */}
-                <div className="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-border">
+                <div className="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-black/5 dark:border-white/5">
                   {selected.pdfUrl && (
                     <a
                       href={selected.pdfUrl}
@@ -231,7 +526,7 @@ export default function Certificates() {
                       href={selected.image}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-medium text-ink bg-surface border border-border hover:bg-surface-strong px-4 py-2.5 rounded-full transition-colors"
+                      className="inline-flex items-center gap-2 text-xs font-medium text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong px-4 py-2.5 rounded-full transition-colors"
                     >
                       Open Full Image
                       <ExternalLink size={12} />
@@ -243,26 +538,22 @@ export default function Certificates() {
                       href={selected.credentialUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-medium text-muted border border-border hover:text-ink hover:border-ink/40 px-4 py-2.5 rounded-full transition-colors"
+                      className="inline-flex items-center gap-2 text-xs font-semibold text-ink bg-surface-strong border border-black/5 dark:border-white/10 hover:border-black/20 px-4 py-2.5 rounded-full transition-colors"
                     >
-                      Verify Online
+                      Verify Credential
                       <ExternalLink size={12} />
                     </a>
                   )}
+
+                  <button
+                    type="button"
+                    onClick={() => setSelected(null)}
+                    className="ml-auto text-xs font-medium text-muted hover:text-ink px-3 py-2 cursor-pointer"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-3 border-t border-border bg-surface-strong text-xs text-muted flex items-center justify-between">
-              <span>Press ESC to close</span>
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                className="font-medium text-ink hover:underline transition-colors"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>

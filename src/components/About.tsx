@@ -3,8 +3,8 @@ import { education, engineeringPrinciples, leadership } from "../data";
 
 export default function About() {
   return (
-    <section id="about" className="py-20 lg:py-28 border-b border-border bg-bg">
-      <div className="max-w-site mx-auto px-6 md:px-10">
+    <section id="about" className="py-20 lg:py-28 border-b border-black/5 dark:border-white/5 bg-band-secondary/70 backdrop-blur-[2px] transition-colors duration-300">
+      <div className="max-w-site mx-auto px-6 md:px-10 relative z-10">
 
         {/* Section Header */}
         <div className="max-w-2xl mb-12">
@@ -54,7 +54,7 @@ export default function About() {
             </div>
 
             {/* Engineering Principles */}
-            <div className="pt-6 border-t border-border">
+            <div className="pt-6 border-t border-black/5 dark:border-white/5">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-5">
                 Core Development Principles
               </p>
@@ -62,7 +62,7 @@ export default function About() {
                 {engineeringPrinciples.map((item) => (
                   <div
                     key={item.number}
-                    className="p-4 rounded-2xl border border-border bg-surface flex flex-col gap-2"
+                    className="p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md flex flex-col gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20 transition-colors"
                   >
                     <span className="text-xs font-bold text-ink opacity-30">{item.number}</span>
                     <h4 className="font-display text-sm font-semibold text-ink">{item.title}</h4>
@@ -77,9 +77,9 @@ export default function About() {
           <div className="lg:col-span-5 space-y-5">
 
             {/* Education Card */}
-            <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-border">
-                <span className="p-2 rounded-xl bg-surface-strong border border-border text-ink">
+            <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-black/5 dark:border-white/5">
+                <span className="p-2 rounded-xl bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
                   <GraduationCap size={20} />
                 </span>
                 <div>
@@ -96,16 +96,16 @@ export default function About() {
                   <MapPin size={11} />
                   {education.location}
                 </p>
-                <p className="text-xs text-muted pt-2 leading-relaxed border-t border-border">
+                <p className="text-xs text-muted pt-2 leading-relaxed border-t border-black/5 dark:border-white/5">
                   {education.description}
                 </p>
               </div>
             </div>
 
             {/* Leadership Card */}
-            <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-border">
-                <span className="p-2 rounded-xl bg-surface-strong border border-border text-ink">
+            <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-black/5 dark:border-white/5">
+                <span className="p-2 rounded-xl bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
                   <Users size={20} />
                 </span>
                 <div>
@@ -123,8 +123,8 @@ export default function About() {
             </div>
 
             {/* Academic Honors */}
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <div className="flex items-center gap-2 text-ink font-semibold text-sm pb-3 mb-3 border-b border-border">
+            <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center gap-2 text-ink font-semibold text-sm pb-3 mb-3 border-b border-black/5 dark:border-white/5">
                 <Award size={15} />
                 Academic Honors
               </div>

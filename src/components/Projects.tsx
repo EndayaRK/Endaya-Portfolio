@@ -23,11 +23,11 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
   const otherProjects   = visibleProjects.filter((p) => !p.featured || activeCategory !== "All");
 
   return (
-    <section id="projects" className="py-20 lg:py-28 border-b border-border bg-bg">
-      <div className="max-w-site mx-auto px-6 md:px-10">
+    <section id="projects" className="py-20 lg:py-28 border-b border-black/5 dark:border-white/5 bg-band-secondary/70 transition-colors duration-300">
+      <div className="max-w-site mx-auto px-6 md:px-10 relative z-10">
 
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-border">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-black/5 dark:border-white/5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
               Evidence of Production Ability
@@ -55,7 +55,7 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
                 className={`text-xs font-semibold rounded-full px-3.5 py-1.5 border transition-all ${
                   activeCategory === cat
                     ? "border-ink bg-ink text-cta-primary-text shadow-sm"
-                    : "border-border bg-surface text-muted hover:text-ink hover:border-ink/40"
+                    : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md text-muted hover:text-ink hover:border-black/20 dark:hover:border-white/20"
                 }`}
               >
                 {cat}
@@ -67,21 +67,21 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         {/* Featured Project */}
         {activeCategory === "All" && featuredProject && (
           <div
-            className={`mt-12 rounded-2xl border transition-all duration-300 p-6 sm:p-8 lg:p-10 bg-surface ${
+            className={`mt-12 rounded-2xl border transition-all duration-300 p-6 sm:p-8 lg:p-10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md ${
               highlightedProjectId === featuredProject.id
-                ? "border-ink shadow-[0_4px_24px_-6px_rgb(0_0_0/0.15)] dark:shadow-[0_4px_24px_-6px_rgb(0_0_0/0.5)]"
-                : "border-border hover:border-ink/30"
+                ? "border-ink shadow-[0_12px_36px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_12px_36px_-6px_rgb(0_0_0/0.6)]"
+                : "border-black/5 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20"
             }`}
           >
-            <div className="flex items-center justify-between pb-6 mb-6 border-b border-border">
+            <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/5 dark:border-white/5">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ink text-cta-primary-text font-semibold">
                   <Sparkles size={11} />
                   Featured
                 </span>
-                <span className="text-border">·</span>
+                <span className="text-muted/40">·</span>
                 <span className="font-medium text-muted">{featuredProject.version}</span>
-                <span className="text-border">·</span>
+                <span className="text-muted/40">·</span>
                 <span className="text-muted">{featuredProject.dateRange}</span>
               </div>
               <span className="text-xs text-muted hidden sm:inline font-medium">
@@ -126,13 +126,13 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-5 border-t border-border">
-                  {/* Stack pills — clean sans-serif */}
+                <div className="mt-6 pt-5 border-t border-black/5 dark:border-white/5">
+                  {/* Stack pills */}
                   <div className="flex flex-wrap gap-1.5 mb-5">
                     {featuredProject.stack.map((tech) => (
                       <span
                         key={tech}
-                        className="text-[11px] font-medium text-muted bg-surface-strong border border-border rounded-md px-2.5 py-1"
+                        className="text-[11px] font-medium text-muted bg-surface-strong border border-black/5 dark:border-white/10 rounded-md px-2.5 py-1"
                       >
                         {tech}
                       </span>
@@ -157,7 +157,7 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
                         href={featuredProject.repoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-surface border border-border hover:bg-surface-strong rounded-full px-4 py-2.5 transition-colors"
+                        className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong rounded-full px-4 py-2.5 transition-colors"
                       >
                         <Github size={14} />
                         Repository
@@ -188,21 +188,21 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
             {otherProjects.map((project) => (
               <article
                 key={project.id}
-                className={`rounded-2xl border transition-all duration-300 p-6 flex flex-col justify-between bg-surface ${
+                className={`rounded-2xl border transition-all duration-300 p-6 flex flex-col justify-between bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md ${
                   highlightedProjectId === project.id
-                    ? "border-ink shadow-[0_4px_20px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_4px_20px_-6px_rgb(0_0_0/0.5)]"
-                    : "border-border hover:border-ink/30"
+                    ? "border-ink shadow-[0_12px_36px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_12px_36px_-6px_rgb(0_0_0/0.6)]"
+                    : "border-black/5 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20"
                 }`}
               >
                 <div>
                   {/* Card meta */}
-                  <div className="flex items-center justify-between text-xs text-muted mb-4 pb-3 border-b border-border font-medium">
+                  <div className="flex items-center justify-between text-xs text-muted mb-4 pb-3 border-b border-black/5 dark:border-white/5 font-medium">
                     <div className="flex items-center gap-2">
                       <span className="text-ink font-semibold">{project.version}</span>
-                      <span className="text-border">·</span>
+                      <span className="text-muted/40">·</span>
                       <span>{project.dateRange}</span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-md border border-border bg-surface-strong text-[10px] font-semibold text-muted">
+                    <span className="px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10 bg-surface-strong text-[10px] font-semibold text-muted">
                       {project.category}
                     </span>
                   </div>
@@ -232,13 +232,13 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
                   </ul>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-border">
+                <div className="mt-6 pt-4 border-t border-black/5 dark:border-white/5">
                   {/* Stack pills */}
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {project.stack.map((tech) => (
                       <span
                         key={tech}
-                        className="text-[10px] font-medium text-muted bg-surface-strong border border-border rounded-md px-2 py-0.5"
+                        className="text-[10px] font-medium text-muted bg-surface-strong border border-black/5 dark:border-white/10 rounded-md px-2 py-0.5"
                       >
                         {tech}
                       </span>
