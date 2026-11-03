@@ -6,163 +6,52 @@
 
 :root {
   /* ── Light Mode: Warm Studio Cream ─────────────────────────────────── */
-  --c-bg:               251 249 245;   /* #FBF9F5 — Warm Cream / Soft Linen      */
-  --c-surface:          255 255 255;   /* #FFFFFF — Pure White card tiles         */
+  /* Alternating Section Bands */
+  --c-band-primary:     251 249 245;   /* #FBF9F5 — Primary Band (Hero, Skills, Certificates) */
+  --c-band-secondary:   243 239 234;   /* #F3EFEA — Secondary Band (Selected Work, About, Contact) */
+
+  --c-bg:               251 249 245;   /* #FBF9F5 — Default Base Background */
+  --c-surface:          255 255 255;   /* #FFFFFF */
   --c-surface-elevated: 255 255 255;
-  --c-surface-strong:   239 236 230;   /* #EFECE6 — Warm Sand (secondary surface) */
-  --c-surface-contrast: 247 245 241;   /* slightly warmer mid-ground              */
+  --c-surface-strong:   239 236 230;   /* #EFECE6 — Warm Sand (subtle badges/pills) */
+  --c-surface-contrast: 247 245 241;   /* slightly warmer mid-ground */
 
-  --c-line:             239 236 230;   /* #EFECE6 — Subtle Warm Sand border       */
-  --c-line-subtle:      245 243 238;
+  --c-line:             232 227 220;   /* Subtle divider border */
+  --c-line-subtle:      240 236 230;
 
-  --c-text:             26  26  24;    /* #1A1A18 — Charcoal Black                */
-  --c-muted:            115 113 107;   /* #73716B — Warm Taupe Gray               */
+  --c-text:             26  26  24;    /* #1A1A18 — Charcoal Black (glare-free) */
+  --c-muted:            115 113 107;   /* #73716B — Warm Taupe Gray */
 
   --c-primary-cta:      26  26  24;    /* #1A1A18 */
-  --c-primary-cta-text: 255 255 255;
+  --c-primary-cta-text: 255 255 255;   /* #FFFFFF */
   --c-secondary-cta:    239 236 230;   /* #EFECE6 */
-  --c-secondary-cta-text: 26 26 24;
-
-  --c-overlay: 26 26 24;
-}
-
-
-/* ─── Warm Studio Cream × OLED Charcoal — Design Token Layer ─────────── */
-
-:root {
-  /* ── Light Mode: Warm Studio Cream ─────────────────────────────────── */
-  --c-bg:               251 249 245;   /* #FBF9F5 — Warm Cream / Soft Linen      */
-  --c-surface:          255 255 255;   /* #FFFFFF — Pure White card tiles         */
-  --c-surface-elevated: 255 255 255;
-  --c-surface-strong:   239 236 230;   /* #EFECE6 — Warm Sand (secondary surface) */
-  --c-surface-contrast: 247 245 241;   /* slightly warmer mid-ground              */
-
-  --c-line:             239 236 230;   /* #EFECE6 — Subtle Warm Sand border       */
-  --c-line-subtle:      245 243 238;
-
-  --c-text:             26  26  24;    /* #1A1A18 — Charcoal Black                */
-  --c-muted:            115 113 107;   /* #73716B — Warm Taupe Gray               */
-
-  --c-primary-cta:      26  26  24;    /* #1A1A18 */
-  --c-primary-cta-text: 255 255 255;
-  --c-secondary-cta:    239 236 230;   /* #EFECE6 */
-  --c-secondary-cta-text: 26 26 24;
+  --c-secondary-cta-text: 26 26 24;    /* #1A1A18 */
 
   --c-overlay: 26 26 24;
 }
 
 .dark {
   /* ── Dark Mode: OLED Charcoal ───────────────────────────────────────── */
-  --c-bg:               10  10  12;    /* #0A0A0C — Deep matte charcoal           */
-  --c-surface:          20  20  22;    /* #141416 — Slightly elevated dark tile   */
-  --c-surface-elevated: 24  24  28;
-  --c-surface-strong:   31  31  35;    /* #1F1F23                                 */
+  /* Alternating Section Bands */
+  --c-band-primary:     10  10  12;    /* #0A0A0C — Primary Band (Hero, Skills, Certificates) */
+  --c-band-secondary:   18  18  22;    /* #121216 — Secondary Band (Selected Work, About, Contact) */
+
+  --c-bg:               10  10  12;    /* #0A0A0C — Deep matte charcoal */
+  --c-surface:          20  20  22;    /* #141416 — Elevated dark surface tile */
+  --c-surface-elevated: 24  24  28;    /* #18181C */
+  --c-surface-strong:   31  31  35;    /* #1F1F23 — Elevated pill/badge */
   --c-surface-contrast: 14  14  16;
 
-  --c-line:             34  34  38;    /* #222226 — Subtle 1px dark border        */
-  --c-line-subtle:      26  26  30;
+  --c-line:             38  38  44;    /* Subtle 1px dark border */
+  --c-line-subtle:      26  26  32;
 
-  --c-text:             243 243 245;   /* #F3F3F5 — Soft off-white, glare-free    */
-  --c-muted:            138 138 147;   /* #8A8A93 — Soft neutral gray             */
+  --c-text:             243 243 245;   /* #F3F3F5 — Soft off-white */
+  --c-muted:            138 138 147;   /* #8A8A93 — Soft neutral gray */
 
   --c-primary-cta:      243 243 245;   /* #F3F3F5 */
   --c-primary-cta-text: 10  10  12;    /* #0A0A0C */
   --c-secondary-cta:    31  31  35;    /* #1F1F23 */
-  --c-secondary-cta-text: 243 243 245;
-
-  --c-overlay: 10 10 12;
-}
-
-/* ─── Base ─── */
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
-}
-
-body {
-  background-color: rgb(var(--c-bg));
-  color: rgb(var(--c-text));
-  transition: background-color 0.25s ease, color 0.25s ease;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-::selection {
-  background-color: rgb(var(--c-text) / 0.10);
-  color: rgb(var(--c-text));
-}
-
-:focus-visible {
-  outline: 2px solid rgb(var(--c-text) / 0.45);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* ─── Scrollbar ─── */
-
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: rgb(var(--c-bg)); }
-::-webkit-scrollbar-thumb {
-  background: rgb(var(--c-line));
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--c-muted) / 0.45);
-}
-
-/* ─── Keyframes ─── */
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes pulseSoft {
-  0%, 100% { opacity: 1;    transform: scale(1);    }
-  50%       { opacity: 0.4; transform: scale(0.90); }
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-
-.dark {
-  /* ── Dark Mode: OLED Charcoal ───────────────────────────────────────── */
-  --c-bg:               10  10  12;    /* #0A0A0C — Deep matte charcoal           */
-  --c-surface:          20  20  22;    /* #141416 — Slightly elevated dark tile   */
-  --c-surface-elevated: 24  24  28;
-  --c-surface-strong:   31  31  35;    /* #1F1F23                                 */
-  --c-surface-contrast: 14  14  16;
-
-  --c-line:             34  34  38;    /* #222226 — Subtle 1px dark border        */
-  --c-line-subtle:      26  26  30;
-
-  --c-text:             243 243 245;   /* #F3F3F5 — Soft off-white, glare-free    */
-  --c-muted:            138 138 147;   /* #8A8A93 — Soft neutral gray             */
-
-  --c-primary-cta:      243 243 245;   /* #F3F3F5 */
-  --c-primary-cta-text: 10  10  12;    /* #0A0A0C */
-  --c-secondary-cta:    31  31  35;    /* #1F1F23 */
-  --c-secondary-cta-text: 243 243 245;
+  --c-secondary-cta-text: 243 243 245; /* #F3F3F5 */
 
   --c-overlay: 10 10 12;
 }
@@ -207,7 +96,79 @@ body {
   background: rgb(var(--c-muted) / 0.45);
 }
 
-/* ─── Keyframes ─────────────────────────────────────────────────────────── */
+/* ─── Atmospheric Lighting Keyframes ───────────────────────────────────── */
+
+@keyframes sunlightBreathe {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.50;
+  }
+  50% {
+    transform: translate3d(-25px, 20px, 0) scale(1.06);
+    opacity: 0.58;
+  }
+}
+
+@keyframes midnightPulse {
+  0%, 100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate3d(-50%, -15px, 0) scale(1.05);
+    opacity: 0.32;
+  }
+}
+
+@keyframes ambientDriftSlow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(35px, -25px, 0) scale(1.04);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+@keyframes pspWaveSlow {
+  0% {
+    transform: translateX(0) translateZ(0);
+  }
+  100% {
+    transform: translateX(-50%) translateZ(0);
+  }
+}
+
+.ambient-sunlight {
+  animation: sunlightBreathe 18s ease-in-out infinite;
+}
+
+.ambient-midnight {
+  animation: midnightPulse 22s ease-in-out infinite;
+}
+
+.ambient-drift-warm,
+.ambient-aurora-accent {
+  animation: ambientDriftSlow 26s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmerSweep 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-psp-wave {
+  animation: pspWaveSlow 28s linear infinite;
+}
+
+/* ─── Standard Keyframes ────────────────────────────────────────────────── */
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
@@ -229,11 +190,22 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Reduced Motion ───────────────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .ambient-sunlight,
+  .ambient-midnight,
+  .ambient-drift-warm,
+  .ambient-aurora-accent,
+  .animate-shimmer,
+  .animate-psp-wave {
+    animation: none !important;
+    transform: none !important;
   }
 }

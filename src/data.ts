@@ -4,7 +4,7 @@
 export const profile = {
   name: "Rhon Kelly A. Endaya",
   initials: "RE",
-  photo: "/profilepic.jpg",
+  photo: "/formalpic.png",
   role: "BS Information Technology Student · Aspiring Full-Stack Developer",
   headline: "Building full-stack software, from interface to implementation.",
   shortBio:
@@ -266,6 +266,17 @@ export type Certificate = {
 // filtering pills and the responsive showcase regardless of how many you add.
 export const certificates: Certificate[] = [
   {
+    id: "cisco-python-essentials-2",
+    title: "Python Essentials 2",
+    issuer: "Cisco Networking Academy",
+    date: "27 Oct 2026",
+    category: "Programming",
+    image: "/certificates/python-essentials-2.png",
+    pdfUrl: "/certificates/python-essentials-2.pdf",
+    description:
+      "Awarded for successfully completing Python Essentials 2 offered through the Cisco Networking Academy program. Certificate ID: de2be413-432b-41a7-b2c8-61c105dc9f97.",
+  },
+  {
     id: "cisco-python-essentials-1",
     title: "Python Essentials 1",
     issuer: "Cisco Networking Academy",
@@ -277,6 +288,28 @@ export const certificates: Certificate[] = [
       "Awarded for successfully completing Python Essentials 1 offered through the Cisco Networking Academy program. Certificate ID: 529caf5f-0650-4720-ac1f-06ea01da0377.",
   },
   {
+    id: "cisco-cyber-threat-management",
+    title: "Cyber Threat Management",
+    issuer: "Cisco Networking Academy",
+    date: "27 Mar 2026",
+    category: "IT Support & Operations",
+    image: "/certificates/cyber-threat-management.png",
+    pdfUrl: "/certificates/cyber-threat-management.pdf",
+    description:
+      "Awarded for successfully completing Cyber Threat Management offered through the Cisco Networking Academy program. Certificate ID: f3a818bb-7f4a-4a97-bfe4-149e9ef6caf9.",
+  },
+  {
+    id: "ethical-hacking-and-data-analytics",
+    title: "Bridging Ethical Hacking and Data Analytics",
+    issuer: "De La Salle Lipa & Swinburne University of Technology",
+    date: "13 Jan 2026",
+    category: "IT Support & Operations",
+    image: "/certificates/ethical-hacking-and-data-analytics.png",
+    pdfUrl: "/certificates/ethical-hacking-and-data-analytics.pdf",
+    description:
+      "Certificate of Attendance for participating in 'Bridging Ethical Hacking and Data Analytics: Building Smarter and Safer Systems' at De La Salle Lipa.",
+  },
+  {
     id: "first-line-support",
     title: "First Line Support",
     issuer: "Service Desk Simulator",
@@ -286,6 +319,39 @@ export const certificates: Certificate[] = [
     image: "/certificates/first-line-support-certificate.png",
     description:
       "Credential verifying resolution of 20+ service desk tickets covering front-line IT diagnostics, customer support, and system troubleshooting. Certificate ID: SDS-2026-0918-7891.",
+  },
+  {
+    id: "dlsl-career-launchpad-grit-factor",
+    title: "Career Launchpad & The Grit Factor",
+    issuer: "De La Salle Lipa Guidance & Counseling Center",
+    date: "13 Aug 2026",
+    category: "IT Support & Operations",
+    image: "/certificates/career-launchpad-grit-factor.png",
+    pdfUrl: "/certificates/career-launchpad-grit-factor.pdf",
+    description:
+      "Certificate of Participation for the Back2Back seminar: Career 104 and SEEDS 104 covering campus-to-career navigation and professional resilience.",
+  },
+  {
+    id: "jpcs-devroutes-2026",
+    title: "DevRoutes: Learning How to Learn with Roadmaps",
+    issuer: "Junior Philippine Computer Society — DLSL Chapter",
+    date: "29 Jan 2026",
+    category: "Programming",
+    image: "/certificates/devroutes-2026.png",
+    pdfUrl: "/certificates/devroutes-2026.pdf",
+    description:
+      "Certificate of Participation for attendance during DevRoutes: Learning How to Learn with Roadmaps at De La Salle Lipa.",
+  },
+  {
+    id: "usaid-ai-ethics-and-governance",
+    title: "AI Ethics and Governance",
+    issuer: "USAID & Asia Open RAN Academy",
+    date: "19 Oct 2024",
+    category: "Programming",
+    image: "/certificates/ai-ethics-and-governance.png",
+    pdfUrl: "/certificates/ai-ethics-and-governance.pdf",
+    description:
+      "Certificate of Participation for attending the USAID webinar on Advancing Open RAN in Asia focusing on AI Ethics and Governance.",
   },
   {
     id: "deans-lister-2024-2025",
