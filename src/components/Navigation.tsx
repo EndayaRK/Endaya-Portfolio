@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, Sparkles, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+
+interface NavigationProps {
+  onOpenAi?: () => void;
+}
 
 const navItems = [
   { label: "Overview",  href: "#overview" },
@@ -10,7 +14,7 @@ const navItems = [
   { label: "Contact",   href: "#contact" },
 ];
 
-export default function Navigation() {
+export default function Navigation({ onOpenAi }: NavigationProps) {
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -79,6 +83,17 @@ export default function Navigation() {
 
         {/* Utility strip */}
         <div className="flex items-center gap-2">
+          {/* "Ask AI" Refined Pill Button */}
+          <button
+            type="button"
+            onClick={onOpenAi}
+            aria-label="Ask AI Assistant"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-black/5 hover:bg-black/10 text-[#1A1A18] border border-black/5 dark:bg-white/10 dark:hover:bg-white/15 dark:text-[#F3F3F5] dark:border-white/10 shadow-xs cursor-pointer group"
+          >
+            <Sparkles size={13} className="text-amber-600 dark:text-amber-400 group-hover:rotate-12 transition-transform" />
+            <span>Ask AI</span>
+          </button>
+
           {/* "Get in Touch" — primary CTA */}
           <a
             href="#contact"
@@ -125,6 +140,17 @@ export default function Navigation() {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenAi?.();
+            }}
+            className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-xl border border-black/5 dark:border-white/10 bg-black/5 hover:bg-black/10 text-[#1A1A18] dark:bg-white/10 dark:hover:bg-white/15 dark:text-[#F3F3F5] transition-all shadow-xs"
+          >
+            <Sparkles size={14} className="text-amber-600 dark:text-amber-400" />
+            <span>Ask AI Assistant</span>
+          </button>
           <a
             href="#contact"
             onClick={() => setMobileMenuOpen(false)}
