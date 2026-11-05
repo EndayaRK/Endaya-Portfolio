@@ -14,11 +14,9 @@ An engineered portfolio, not a template — featuring a live, interactive mobile
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/EndayaRK/Endaya-Portfolio/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](#license--contact)
 
- · [Live Demo]([https://github.com/EndayaRK/Endaya-Portfolio/issues](https://endaya-portfolio.vercel.app/) ·[Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
+[Live Demo](https://endaya-portfolio.vercel.app/) · [Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
 
 </div>
-
-
 
 ---
 
@@ -159,7 +157,8 @@ Screenshots communicate what an interface *looked like*; they say nothing about 
 This project is distributed under the **MIT License**. You are free to fork the structural and tooling patterns demonstrated here; please do not reuse the personal content, copy, or imagery as-is.
 
 **Rhon Kelly A. Endaya**
-Full-Stack Developer & System Development Student, De La Salle Lipa, Philippines
+Full-Stack Developer & System Development Student, De La Salle Lipa
+Malvar, Batangas, Philippines
 
 - Email: [endayarhonkelly@gmail.com](mailto:endayarhonkelly@gmail.com)
 - LinkedIn: [linkedin.com/in/rhon-kelly-endaya-a91782391](https://linkedin.com/in/rhon-kelly-endaya-a91782391)
