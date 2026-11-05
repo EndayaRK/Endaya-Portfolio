@@ -14,11 +14,11 @@ An engineered portfolio, not a template — featuring a live, interactive mobile
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/EndayaRK/Endaya-Portfolio/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](#license--contact)
 
- [Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
+ [Live Demo]([https://github.com/EndayaRK/Endaya-Portfolio/issues](https://endaya-portfolio.vercel.app/)) ·[Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
 
 </div>
 
-> **Note:** Replace the *Live Demo* link above with the production URL this portfolio itself is deployed to (the link currently points at the flagship project, PalengkeHub, since no portfolio domain was supplied).
+
 
 ---
 
