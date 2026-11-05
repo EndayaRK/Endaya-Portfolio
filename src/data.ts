@@ -11,11 +11,11 @@ export const profile = {
     "Fourth-year BS Information Technology student at De La Salle Lipa, majoring in System Development. I build full-stack web applications independently and collaborate on mobile and web systems, working primarily with React, TypeScript, Node.js, Express.js, and PHP.",
   summary:
     "Fourth-year BS Information Technology student at De La Salle Lipa, majoring in System Development. I build full-stack web applications independently and collaborate on mobile and web projects, working mainly in React, TypeScript, Node.js, Express.js, and PHP.",
-  location: "Lipa City, Batangas, Philippines",
+  location: "Malvar, Batangas, Philippines",
   status: "System Development · Full-Stack",
   availability: "Available for immediate start",
   email: "endayarhonkelly@gmail.com",
-  phone: "0954 422 3571",
+  phone: "0946 220 1087",
   linkedin: "https://linkedin.com/in/rhon-kelly-endaya-a91782391",
   github: "https://github.com/EndayaRK",
 };
@@ -160,6 +160,35 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    id: "palengkehub",
+    version: "v1.2",
+    dateRange: "Mar 2026 — Present",
+    title: "PalengkeHub — Digital Marketplace & Price Comparator for Lipa City Public Market",
+    category: "Mobile & Capstone",
+    type: "Public Market Marketplace (Capstone Project)",
+    role: "Frontend Developer & UI Designer (Lead Frontend Architecture)",
+    previewVariant: "mobile",
+    featured: true,
+    stack: [
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Node.js",
+      "Express.js",
+      "REST API",
+    ],
+    summary:
+      "A collaborative digital marketplace modernizing Lipa City Public Market operations with stall-level price benchmarking, real-time Presyo Check comparisons, and scheduled zero-delivery-fee pickup ticketing.",
+    details: [
+      "Built the 'Presyo Check' engine allowing market-goers to compare real-time vendor unit pricing per kilo across wet and dry stalls with dynamic price benchmarking.",
+      "Designed the mobile-first UX with zero-delivery-fee pickup ticketing and scheduled stall collection windows with instant claim codes (e.g., PH-2416).",
+      "Engineered responsive client components using React, TypeScript, and Tailwind CSS tailored for fast-paced market vendors and smartphone shoppers with low latency.",
+      "Collaborated on backend RESTful endpoints and authentication schemas connecting vendor inventories with consumer order queues.",
+    ],
+    repoUrl: "https://github.com/EndayaRK",
+    liveUrl: "https://www.palengkehub.site/",
+  },
+  {
     id: "event-tracker",
     version: "v3",
     dateRange: "Jul 2026 — Oct 2026",
@@ -168,7 +197,7 @@ export const projects: Project[] = [
     type: "Full-Stack Web Application",
     role: "Full-Stack Architect & Developer",
     previewVariant: "dashboard",
-    featured: true,
+    featured: false,
     stack: [
       "React",
       "TypeScript",
@@ -213,26 +242,6 @@ export const projects: Project[] = [
       "Engineered automated stock reorder thresholds that trigger notifications before critical parts reach depletion.",
       "Built structured exportable reporting tools, significantly cutting down manual inventory audit hours.",
       "Standardized stock movement logs across departments to eliminate inventory discrepancies.",
-    ],
-    repoUrl: "https://github.com/EndayaRK",
-  },
-  {
-    id: "palengkehub",
-    version: "v1",
-    dateRange: "Mar 2026 — Oct 2026",
-    title: "PalengkeHub",
-    category: "Mobile & Capstone",
-    type: "Public Market Marketplace (Capstone Project)",
-    role: "UI/UX & Admin Dashboard Lead",
-    previewVariant: "mobile",
-    stack: ["React Native", "Expo", "Supabase", "PostgreSQL", "Mobile UI"],
-    summary:
-      "A collaborative marketplace platform modernizing public market operations with stall-level price visibility and advance product pre-ordering.",
-    details: [
-      "Collaboratively planned and designed the user authentication flows and the primary administrative dashboard.",
-      "Defined key administrative metrics, transaction logs, and real-time activity indicators for market oversight.",
-      "Engineered clear data visualizations and chart specifications implemented by the capstone development team.",
-      "Ensured mobile usability for market vendors and consumers navigating fast-paced wet and dry market inventories.",
     ],
     repoUrl: "https://github.com/EndayaRK",
   },
