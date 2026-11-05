@@ -158,7 +158,7 @@ This project is distributed under the **MIT License**. You are free to fork the 
 
 **Rhon Kelly A. Endaya**
 Full-Stack Developer & System Development Student, De La Salle Lipa
-Malvar, Batangas, Philippines
+Lipa, Batangas, Philippines
 
 - Email: [endayarhonkelly@gmail.com](mailto:endayarhonkelly@gmail.com)
 - LinkedIn: [linkedin.com/in/rhon-kelly-endaya-a91782391](https://linkedin.com/in/rhon-kelly-endaya-a91782391)
