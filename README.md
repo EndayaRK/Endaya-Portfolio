@@ -159,8 +159,7 @@ Screenshots communicate what an interface *looked like*; they say nothing about 
 This project is distributed under the **MIT License**. You are free to fork the structural and tooling patterns demonstrated here; please do not reuse the personal content, copy, or imagery as-is.
 
 **Rhon Kelly A. Endaya**
-Full-Stack Developer & System Development Student, De La Salle Lipa
-Malvar, Batangas, Philippines
+Full-Stack Developer & System Development Student, De La Salle Lipa, Philippines
 
 - Email: [endayarhonkelly@gmail.com](mailto:endayarhonkelly@gmail.com)
 - LinkedIn: [linkedin.com/in/rhon-kelly-endaya-a91782391](https://linkedin.com/in/rhon-kelly-endaya-a91782391)
