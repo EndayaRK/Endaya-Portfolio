@@ -14,7 +14,7 @@ An engineered portfolio, not a template — featuring a live, interactive mobile
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/EndayaRK/Endaya-Portfolio/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](#license--contact)
 
-[Live Demo](https://www.palengkehub.site/) · [Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
+ [Report an Issue](https://github.com/EndayaRK/Endaya-Portfolio/issues) · [LinkedIn](https://linkedin.com/in/rhon-kelly-endaya-a91782391) · [Email](mailto:endayarhonkelly@gmail.com)
 
 </div>
 
