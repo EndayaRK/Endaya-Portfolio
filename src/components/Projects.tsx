@@ -3,6 +3,7 @@ import { ArrowUpRight, Filter, Github } from "lucide-react";
 import { projects } from "../data";
 import ProjectPreview from "./ProjectPreview";
 import PalengkeHubSimulator from "./PalengkeHubSimulator";
+import EventPulseSimulator from "./EventPulseSimulator";
 
 type ProjectsProps = {
   highlightedProjectId?: string | null;
@@ -23,13 +24,15 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
   const showPalengkeHubShowcase =
     activeCategory === "All" || activeCategory === "Mobile & Capstone";
 
-  // Grid projects exclude PalengkeHub (since it is showcased in the primary 2-column interactive simulator)
+  const showEventPulseShowcase =
+    activeCategory === "All" || activeCategory === "Full-Stack";
+
+  // Grid projects exclude showcased interactive simulator projects
   const gridProjects = useMemo(() => {
-    if (activeCategory === "All" || activeCategory === "Mobile & Capstone") {
-      return visibleProjects.filter((p) => p.id !== "palengkehub");
-    }
-    return visibleProjects;
-  }, [activeCategory, visibleProjects]);
+    return visibleProjects.filter(
+      (p) => p.id !== "palengkehub" && p.id !== "event-tracker"
+    );
+  }, [visibleProjects]);
 
   return (
     <section
@@ -75,7 +78,7 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
           </div>
         </div>
 
-        {/* ── #1 FEATURED FLAGSHIP SHOWCASE: PALENGKEHUB INTERACTIVE SIMULATOR ── */}
+        {/* ── #1 FEATURED FLAGSHIP SHOWCASE: PALENGKEHUB MOBILE SIMULATOR ── */}
         {showPalengkeHubShowcase && (
           <div className="mt-12">
             <PalengkeHubSimulator
@@ -84,9 +87,27 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
           </div>
         )}
 
-        {/* ── GRID PROJECTS: EVENT TRACKER & AUTO AVENUE ── */}
+        {/* ── #2 FEATURED FULL-STACK SHOWCASE: EVENTPULSE DESKTOP BROWSER SANDBOX ── */}
+        {showEventPulseShowcase && (
+          <div className="mt-12">
+            <EventPulseSimulator
+              isHighlighted={
+                highlightedProjectId === "event-tracker" ||
+                highlightedProjectId === "eventpulse"
+              }
+            />
+          </div>
+        )}
+
+        {/* ── GRID PROJECTS: AUTO AVENUE & ADDITIONAL PRODUCTION SYSTEMS ── */}
         {gridProjects.length > 0 && (
-          <div className={showPalengkeHubShowcase ? "mt-16" : "mt-12"}>
+          <div
+            className={
+              showPalengkeHubShowcase || showEventPulseShowcase
+                ? "mt-16"
+                : "mt-12"
+            }
+          >
             {activeCategory === "All" ? (
               <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black/5 dark:border-white/5 pb-4">
                 <div>
@@ -94,11 +115,11 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
                     Additional Production Systems
                   </h3>
                   <p className="text-xs text-muted mt-0.5">
-                    Full-stack web applications, supplier portals, and type-safe database architectures.
+                    Supplier portals, enterprise database architectures, and reporting workflows.
                   </p>
                 </div>
                 <span className="text-xs font-mono text-muted">
-                  {gridProjects.length} systems
+                  {gridProjects.length} system
                 </span>
               </div>
             ) : (
