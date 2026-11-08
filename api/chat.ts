@@ -15,6 +15,18 @@ interface VercelResponse {
   end: (data?: any) => void;
 }
 
+// Cached SDK client across invocations
+let cachedAiClient: GoogleGenAI | null = null;
+let cachedAiKey: string | null = null;
+
+function getAiClient(key: string): GoogleGenAI {
+  if (!cachedAiClient || cachedAiKey !== key) {
+    cachedAiClient = new GoogleGenAI({ apiKey: key });
+    cachedAiKey = key;
+  }
+  return cachedAiClient;
+}
+
 const SYSTEM_INSTRUCTION = `You are the portfolio assistant for Rhon Kelly Endaya, a 4th-year BS Information Technology student at De La Salle Lipa specializing in System Development.
 Tech Stack: React, TypeScript, Node.js, Express.js, PHP, PostgreSQL, MongoDB, Prisma.
 Projects: Full-stack applications, barangay community platforms, and automotive inventory management.
@@ -102,16 +114,13 @@ export default async function handler(req: VercelRequest, res?: VercelResponse) 
 
   const trimmedQuery = userQuery.trim();
 
-  // Initialize official @google/genai SDK
-  const ai = new GoogleGenAI({ apiKey });
+  // Reusable official @google/genai SDK instance
+  const ai = getAiClient(apiKey);
 
-  // Targeted lightweight Flash-Lite models in order of priority
+  // Highest-speed active Flash-Lite models in order of performance
   const CANDIDATE_MODELS = [
     "gemini-3.5-flash-lite",
     "gemini-flash-lite-latest",
-    "gemini-2.5-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-1.5-flash-8b",
   ];
 
   let lastError: any = null;
@@ -122,8 +131,8 @@ export default async function handler(req: VercelRequest, res?: VercelResponse) 
         model,
         contents: trimmedQuery,
         config: {
-          temperature: 0.3,
-          maxOutputTokens: 300,
+          temperature: 0.2,
+          maxOutputTokens: 180,
           systemInstruction: SYSTEM_INSTRUCTION,
         },
       });

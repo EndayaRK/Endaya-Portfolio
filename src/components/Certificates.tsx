@@ -121,42 +121,19 @@ export default function Certificates() {
     }
   };
 
-  // Console Keyboard Listener: D-Pad navigation (ArrowLeft / ArrowRight) & Action (Enter / Space / X)
+  // Modal Keyboard Listener: Escape closes credential modal
   useEffect(() => {
+    if (!selected) return;
+
     function handleKeyDown(e: KeyboardEvent) {
-      // If modal is open, let Escape close it
-      if (selected) {
-        if (e.key === "Escape") setSelected(null);
-        return;
-      }
-
-      // Check if user is typing in an input
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        const prev = Math.max(0, activeIndex - 1);
-        scrollToCard(prev, true);
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        const next = Math.min(visibleCertificates.length - 1, activeIndex + 1);
-        scrollToCard(next, true);
-      } else if (e.key === "Enter" || e.key === " " || e.key.toLowerCase() === "x") {
-        if (visibleCertificates[activeIndex]) {
-          e.preventDefault();
-          setSelected(visibleCertificates[activeIndex]);
-        }
+      if (e.key === "Escape") {
+        setSelected(null);
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selected, activeIndex, visibleCertificates, scrollToCard]);
+  }, [selected]);
 
   return (
     <section

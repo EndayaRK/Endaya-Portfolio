@@ -14,6 +14,13 @@ export default defineConfig(({ mode }) => {
       {
         name: "local-api-chat-middleware",
         configureServer(server) {
+          let cachedChatHandler: any = null;
+          server.watcher.on("change", (file) => {
+            if (file.includes("api/chat.ts") || file.includes("api\\chat.ts")) {
+              cachedChatHandler = null;
+            }
+          });
+
           server.middlewares.use(async (req, res, next) => {
             if (req.url === "/api/chat" || req.url?.startsWith("/api/chat?")) {
               if (req.method === "OPTIONS") {
@@ -31,8 +38,11 @@ export default defineConfig(({ mode }) => {
                 req.on("end", async () => {
                   const bodyStr = Buffer.concat(buffers).toString("utf-8");
                   try {
-                    const chatModule = await server.ssrLoadModule("/api/chat.ts");
-                    const handler = chatModule.default;
+                    if (!cachedChatHandler) {
+                      const chatModule = await server.ssrLoadModule("/api/chat.ts");
+                      cachedChatHandler = chatModule.default;
+                    }
+                    const handler = cachedChatHandler;
                     let parsedBody = {};
                     try {
                       parsedBody = JSON.parse(bodyStr);
