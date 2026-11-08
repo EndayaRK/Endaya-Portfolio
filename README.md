@@ -9,7 +9,7 @@ An engineered portfolio, not a template — featuring a live, interactive mobile
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=0A0A0C)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Google Gemini](https://img.shields.io/badge/Gemini-2.5_Flash--Lite-8E75FF?style=flat-square&logo=googlegemini&logoColor=white)](https://ai.google.dev)
+[![Google Gemini](https://img.shields.io/badge/Gemini-3.5_Flash--Lite-8E75FF?style=flat-square&logo=googlegemini&logoColor=white)](https://ai.google.dev)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/EndayaRK/Endaya-Portfolio/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/EndayaRK/Endaya-Portfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](#license--contact)
@@ -34,7 +34,7 @@ The site is statically served and API-backed by a single Vercel Serverless Funct
 An embedded, pixel-faithful mobile device frame (`src/components/PalengkeHubSimulator.tsx`) that reproduces the flagship **PalengkeHub** product — a Lipa City Public Market digital marketplace and price comparator — as a *working* micro-application inside the portfolio itself. Visitors can operate the real "Presyo Check" comparator, browse the interactive stall/category rail, and walk through zero-delivery-fee GCash pickup ticket generation without navigating away from the page. This was a deliberate choice to prove UI fidelity and state-management discipline rather than merely illustrate them.
 
 ### Native Gemini Copilot ("Ask AI")
-A command-palette-triggered assistant (`⌘K` / `Ctrl+K`, see `src/components/AiSearchModal.tsx`) that answers visitor questions about the author's stack, projects, and availability in real time. It is backed entirely by a single Vercel Serverless Function (`api/chat.ts`) calling `gemini-2.5-flash-lite` via the official `@google/genai` SDK — no standalone backend service, container, or database required. The handler is written with automatic model fallback (cascading through `gemini-flash-lite-latest`, `gemini-2.5-flash`, and `gemini-1.5-flash-8b`) so a single model outage or quota limit never results in a dead endpoint.
+A command-palette-triggered assistant (`⌘K` / `Ctrl+K`, see `src/components/AiSearchModal.tsx`) that answers visitor questions about the author's stack, projects, and availability in real time. It is backed entirely by a single Vercel Serverless Function (`api/chat.ts`) calling `gemini-3.5-flash-lite` via the official `@google/genai` SDK — no standalone backend service, container, or database required. The handler is written with automatic model fallback (cascading to `gemini-flash-lite-latest`) so a single model outage or quota limit never results in a dead endpoint.
 
 ### Console-Inspired Credential Viewer
 A PSP XMB–inspired horizontal Cover Flow carousel (`src/components/Certificates.tsx`) for browsing certifications and honors, featuring scroll-snapped horizontal navigation, full `← →` keyboard (D-pad style) control, an animated background wave rendered in pure CSS, and dynamic focus/scale states on the active credential — turning a conventional "certificates grid" into a distinct, memorable interaction.
@@ -50,7 +50,7 @@ A custom dual-theme system built on CSS custom properties (`src/index.css`), bal
 | :--- | :--- |
 | **Frontend** | React 18, TypeScript, Tailwind CSS, Framer Motion, Lucide Icons |
 | **Backend / Serverless** | Vercel Serverless Functions, Node.js |
-| **AI & APIs** | Google Gemini 2.5 Flash-Lite via the `@google/genai` SDK |
+| **AI & APIs** | Google Gemini 3.5 Flash-Lite via the `@google/genai` SDK |
 | **Build & Tooling** | Vite, TypeScript Compiler (`tsc -b`), PostCSS, Autoprefixer |
 | **Deployment & CI** | Vercel, Git, GitHub Actions (type-check + build verification) |
 
@@ -144,8 +144,8 @@ npm run try-ai        # CLI smoke test for the Gemini integration (scripts/try-a
 
 ## Key Architecture Decisions
 
-**Why `gemini-2.5-flash-lite`?**
-The copilot is a secondary, assistive surface, not the core product — it needs to answer short, factual questions about a single, well-defined context (one developer's stack, projects, and availability) with minimal latency. Flash-Lite was chosen over larger Gemini variants for its high throughput, generous rate limits on a free-tier key, and sub-second response times, which keep the modal feeling instantaneous rather than like a bolted-on chatbot. The serverless handler additionally cascades through several Flash-Lite-class models (`gemini-flash-lite-latest`, `gemini-2.5-flash`, `gemini-1.5-flash-8b`) as fallbacks, trading a small amount of complexity for meaningfully higher uptime on a hobby-tier API key.
+**Why `gemini-3.5-flash-lite`?**
+The copilot is a secondary, assistive surface, not the core product — it needs to answer short, factual questions about a single, well-defined context (one developer's stack, projects, and availability) with minimal latency. Flash-Lite was chosen over larger Gemini variants for its high throughput, generous rate limits on a free-tier key, and sub-second response times, which keep the modal feeling instantaneous rather than like a bolted-on chatbot. The serverless handler additionally cascades to `gemini-flash-lite-latest` as a fallback, trading a small amount of complexity for meaningfully higher uptime on a hobby-tier API key.
 
 **Why a live client-side device simulation instead of static project screenshots?**
 Screenshots communicate what an interface *looked like*; they say nothing about how it behaves under real interaction — state transitions, responsive layout fidelity, loading and empty states, or how a user actually moves through a flow. Rebuilding PalengkeHub's core "Presyo Check" and pickup-ticket flows as a live, self-contained React component inside the portfolio was a deliberate decision to demonstrate exactly those things: component-level state management, interaction design, and empathy for the end user — in a form a recruiter or engineer can personally operate in under thirty seconds, rather than take on faith from a static image.

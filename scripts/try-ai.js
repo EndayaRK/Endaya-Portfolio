@@ -65,9 +65,6 @@ Tone: Crisp, professional, welcoming, and concise. Answer visitor questions in 1
 const CANDIDATE_MODELS = [
   "gemini-3.5-flash-lite",
   "gemini-flash-lite-latest",
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
-  "gemini-1.5-flash-8b",
 ];
 
 let success = false;
