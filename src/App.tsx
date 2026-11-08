@@ -4,30 +4,43 @@ import AmbientBackground from "./components/AmbientBackground";
 import Hero from "./components/Hero";
 import ProfessionalOverview from "./components/ProfessionalOverview";
 import Projects from "./components/Projects";
-import Skills from "./components/Skills";
+import TechnicalCompetencies from "./components/TechnicalCompetencies";
 import About from "./components/About";
 import Certificates from "./components/Certificates";
 import Footer from "./components/Footer";
 import Toast from "./components/Toast";
-import AiSearchModal from "./components/AiSearchModal";
+import AiChatWidget from "./components/AiChatWidget";
 import { profile } from "./data";
 
 export default function App() {
   const [emailCopied, setEmailCopied] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [highlightedProjectIds, setHighlightedProjectIds] = useState<string[] | null>(null);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
 
-  // Global shortcut: Cmd+K / Ctrl+K opens AI modal
+  // Global shortcut: Cmd+K / Ctrl+K opens AI chatbot
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setIsAiModalOpen((prev) => !prev);
+        setIsAiChatOpen((prev) => !prev);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Listen for custom project select events from navbar search
+  useEffect(() => {
+    function handleSelectProject(e: Event) {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail) {
+        setHighlightedProjectIds([customEvent.detail]);
+      }
+    }
+    window.addEventListener("select-portfolio-project", handleSelectProject);
+    return () =>
+      window.removeEventListener("select-portfolio-project", handleSelectProject);
   }, []);
 
   function copyEmail() {
@@ -55,8 +68,8 @@ export default function App() {
       {/* Ambient Background with SVG Grid and Drifting Radial Blur Glows */}
       <AmbientBackground />
 
-      {/* Navigation */}
-      <Navigation onOpenAi={() => setIsAiModalOpen(true)} />
+      {/* Navigation with Integrated Compact Search */}
+      <Navigation onOpenAi={() => setIsAiChatOpen((prev) => !prev)} />
 
       {/* Main Content with Alternating Section Bands */}
       <main className="relative z-10">
@@ -69,7 +82,7 @@ export default function App() {
               : null
           }
         />
-        <Skills onHoverGroup={(ids) => setHighlightedProjectIds(ids)} />
+        <TechnicalCompetencies onHoverGroup={(ids) => setHighlightedProjectIds(ids)} />
         <About />
         <Certificates />
       </main>
@@ -81,10 +94,10 @@ export default function App() {
 
       <Toast message={toastMessage} visible={!!toastMessage} />
 
-      {/* Gemini Flash-Lite AI Search Modal */}
-      <AiSearchModal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
+      {/* ── Messenger-Style Floating AI Chat Widget ── */}
+      <AiChatWidget
+        isOpen={isAiChatOpen}
+        onOpenChange={setIsAiChatOpen}
       />
     </div>
   );

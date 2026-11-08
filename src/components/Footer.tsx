@@ -152,7 +152,7 @@ export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
         <div className="mt-16 pt-8 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted">
           <span>© {new Date().getFullYear()} {profile.name}</span>
           <div className="flex items-center gap-4">
-            <span className="hidden md:inline">Designed with minimal surface & maximum impact</span>
+            
             <button
               type="button"
               onClick={scrollToTop}

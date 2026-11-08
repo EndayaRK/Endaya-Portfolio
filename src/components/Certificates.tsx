@@ -158,8 +158,6 @@ export default function Certificates() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selected, activeIndex, visibleCertificates, scrollToCard]);
 
-  const activeCert = visibleCertificates[activeIndex];
-
   return (
     <section
       id="certificates"
@@ -377,55 +375,6 @@ export default function Certificates() {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* ── PSP Console HUD & Bottom Action Hints ── */}
-      <div className="max-w-site mx-auto px-6 md:px-10 mt-6 relative z-10">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md shadow-sm">
-          {/* Left: Index Counter */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold tracking-widest text-ink">
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
-              {String(visibleCertificates.length).padStart(2, "0")}
-            </span>
-            <span className="text-[11px] text-muted hidden md:inline">
-              · {activeCert ? activeCert.title : ""}
-            </span>
-          </div>
-
-          {/* Center: Interactive Indicator Dots */}
-          <div className="flex items-center gap-1.5 overflow-x-auto max-w-[200px] sm:max-w-none">
-            {visibleCertificates.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToCard(i, true)}
-                aria-label={`Jump to certificate ${i + 1}`}
-                className={`transition-all duration-200 rounded-full ${
-                  i === activeIndex
-                    ? "w-6 h-1.5 bg-ink"
-                    : "w-1.5 h-1.5 bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
-
-          {/* Right: Console Action Hints */}
-          <div className="flex items-center gap-3 text-xs font-mono text-muted">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-              <span className="font-bold text-ink">[ ← → ]</span> Select
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                if (activeCert) setSelected(activeCert);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-ink text-cta-primary-text font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
-            >
-              <span className="font-bold">[ ✕ ]</span> Inspect Credential ↗
-            </button>
-          </div>
         </div>
       </div>
 

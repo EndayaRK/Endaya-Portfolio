@@ -915,7 +915,7 @@ export default function PalengkeHubSimulator({
               </a>
 
               <a
-                href="https://github.com/EndayaRK"
+                href="https://github.com/EndayaRK/PalengkeHubFinal"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong rounded-full px-5 py-3 transition-colors shadow-xs"
