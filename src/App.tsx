@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import InitialPreloader from "./components/InitialPreloader";
 import Navigation from "./components/Navigation";
 import AmbientBackground from "./components/AmbientBackground";
 import Hero from "./components/Hero";
 import ProfessionalOverview from "./components/ProfessionalOverview";
 import Projects from "./components/Projects";
 import TechnicalCompetencies from "./components/TechnicalCompetencies";
-import About from "./components/About";
 import Certificates from "./components/Certificates";
 import Footer from "./components/Footer";
 import Toast from "./components/Toast";
@@ -30,17 +30,33 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Listen for custom project select events from navbar search
+  // Listen for custom project select events from navbar search, skills, and Developer Journey milestones
   useEffect(() => {
-    function handleSelectProject(e: Event) {
+    function handleSelectPortfolioProject(e: Event) {
       const customEvent = e as CustomEvent<string>;
       if (customEvent.detail) {
         setHighlightedProjectIds([customEvent.detail]);
       }
     }
-    window.addEventListener("select-portfolio-project", handleSelectProject);
-    return () =>
-      window.removeEventListener("select-portfolio-project", handleSelectProject);
+
+    function handleSelectProjectIndex(e: Event) {
+      const customEvent = e as CustomEvent<number | string>;
+      if (typeof customEvent.detail === "number") {
+        const idMap = ["palengkehub", "event-tracker", "auto-avenue"];
+        if (idMap[customEvent.detail]) {
+          setHighlightedProjectIds([idMap[customEvent.detail]]);
+        }
+      } else if (typeof customEvent.detail === "string") {
+        setHighlightedProjectIds([customEvent.detail]);
+      }
+    }
+
+    window.addEventListener("select-portfolio-project", handleSelectPortfolioProject);
+    window.addEventListener("select-project", handleSelectProjectIndex);
+    return () => {
+      window.removeEventListener("select-portfolio-project", handleSelectPortfolioProject);
+      window.removeEventListener("select-project", handleSelectProjectIndex);
+    };
   }, []);
 
   function copyEmail() {
@@ -65,6 +81,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-band-primary text-ink selection:bg-ink/10 selection:text-ink relative overflow-x-hidden">
+      {/* Premium Initial Loading Screen */}
+      <InitialPreloader />
+
       {/* Ambient Background with SVG Grid and Drifting Radial Blur Glows */}
       <AmbientBackground />
 
@@ -83,7 +102,6 @@ export default function App() {
           }
         />
         <TechnicalCompetencies onHoverGroup={(ids) => setHighlightedProjectIds(ids)} />
-        <About />
         <Certificates />
       </main>
 

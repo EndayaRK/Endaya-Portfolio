@@ -143,3 +143,5 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
     </section>
   );
 }
+
+export { Projects as SelectedWork };
