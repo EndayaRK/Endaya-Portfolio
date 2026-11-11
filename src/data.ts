@@ -23,35 +23,35 @@ export const profile = {
 export const professionalOverview = [
   {
     index: "01",
-    label: "Development Focus",
-    title: "Full-Stack Web Applications",
+    label: "Client Architecture",
+    statement: "Fluid interfaces, strict typing.",
     description:
-      "Designing responsive, accessible frontends and connecting them to robust, type-safe backend architectures and APIs.",
-    tags: ["React", "TypeScript", "Node.js", "Express.js"],
+      "React, TypeScript, Tailwind, component design systems, and responsive ergonomics.",
+    tags: ["React 18", "TypeScript", "Tailwind CSS", "Design Systems"],
   },
   {
     index: "02",
-    label: "Architecture & Data",
-    title: "Reliable APIs & Persistence",
+    label: "Backend & Runtimes",
+    statement: "Predictable APIs, validated routes.",
     description:
-      "Structuring relational and document data stores with schema validation, JWT authentication, and predictable RESTful workflows.",
-    tags: ["MongoDB Atlas", "PostgreSQL", "MySQL", "Supabase"],
+      "Node.js, Express, PHP, REST architectures, and Zod/JWT middleware.",
+    tags: ["Node.js", "Express.js", "PHP", "Zod Validation", "JWT Auth"],
   },
   {
     index: "03",
-    label: "Practical Experience",
-    title: "Shipped Real-World Systems",
+    label: "Data Persistence",
+    statement: "Structured schemas, durable storage.",
     description:
-      "From event registration platforms and automotive inventory management to multi-vendor public market capstone applications.",
-    tags: ["EventPulse", "PalengkeHub", "Auto Avenue"],
+      "PostgreSQL, MongoDB, MySQL, and Supabase database modeling.",
+    tags: ["PostgreSQL", "MongoDB Atlas", "MySQL", "Supabase"],
   },
   {
     index: "04",
-    label: "Current Direction",
-    title: "BSIT @ De La Salle Lipa",
+    label: "Systems & Delivery",
+    statement: "Automated workflows, edge deployment.",
     description:
-      "Fourth-year undergraduate specializing in System Development, actively seeking a high-impact IT internship to contribute to production code.",
-    tags: ["System Development", "Dean's Lister", "JPCS Member"],
+      "Git versioning, Vercel serverless functions, and CI/CD operations.",
+    tags: ["Git / GitHub", "Vercel Edge", "REST Protocol", "CI/CD"],
   },
 ];
 

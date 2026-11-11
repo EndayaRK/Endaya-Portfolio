@@ -24,7 +24,29 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="initial-loading-fallback" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#FBF9F5;color:#1A1A18;font-family:'Plus Jakarta Sans',sans-serif;z-index:9999;">
+        <img src="/RK_logo_original.png" alt="Rhon Kelly Endaya Logo" style="width:56px;height:56px;object-fit:contain;filter:brightness(0);margin-bottom:20px;" id="fallback-logo" />
+        <div style="font-size:13px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;">Rhon Kelly Endaya</div>
+        <div style="font-size:10px;font-family:monospace;letter-spacing:0.3em;text-transform:uppercase;opacity:0.6;margin-top:6px;">Portfolio · 2026</div>
+        <div style="margin-top:24px;width:160px;height:1.5px;background-color:rgba(0,0,0,0.1);border-radius:9999px;overflow:hidden;" id="fallback-track">
+          <div style="width:40%;height:100%;background-color:#1A1A18;border-radius:9999px;" id="fallback-bar"></div>
+        </div>
+      </div>
+      <script>
+        if (document.documentElement.classList.contains("dark")) {
+          var fb = document.getElementById("initial-loading-fallback");
+          var fl = document.getElementById("fallback-logo");
+          var ft = document.getElementById("fallback-track");
+          var fbar = document.getElementById("fallback-bar");
+          if (fb) { fb.style.backgroundColor = "#0A0A0C"; fb.style.color = "#F3F3F5"; }
+          if (fl) { fl.style.filter = "brightness(1)"; }
+          if (ft) { ft.style.backgroundColor = "rgba(255,255,255,0.12)"; }
+          if (fbar) { fbar.style.backgroundColor = "#F3F3F5"; }
+        }
+      </script>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+  

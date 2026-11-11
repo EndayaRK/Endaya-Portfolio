@@ -10,7 +10,7 @@ const navItems = [
   { label: "Overview", href: "#overview" },
   { label: "Projects", href: "#projects" },
   { label: "Skills", href: "#skills" },
-  { label: "About", href: "#about" },
+  { label: "Credentials", href: "#certificates" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -103,18 +103,18 @@ const SEARCH_TARGETS: SearchTarget[] = [
     ],
   },
   {
-    id: "about",
-    label: "About Rhon (BSIT @ DLSL)",
+    id: "overview",
+    label: "Engineering Philosophy & Focus",
     category: "Profile",
-    targetId: "about",
+    targetId: "overview",
     keywords: [
       "about",
       "bio",
       "education",
-      "de la salle lipa",
-      "dlsl",
+      "philosophy",
       "system development",
-      "jpcs",
+      "architecture",
+      "pillars",
     ],
   },
   {
@@ -166,7 +166,6 @@ export default function Navigation({ onOpenAi }: NavigationProps) {
       const sections = [
         "contact",
         "certificates",
-        "about",
         "skills",
         "projects",
         "overview",
