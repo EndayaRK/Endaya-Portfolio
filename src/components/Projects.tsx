@@ -22,8 +22,11 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         id: "palengkehub",
         number: "01",
         title: "PalengkeHub",
-        subtitle: "Mobile",
+        subtitle: "Mobile App",
         category: "Mobile & Capstone",
+        domain: "Public Market Platform & Presyo Check",
+        tagline: "Lipa City Public Market",
+        accentColor: "#D95B16",
         stack: [
           "React",
           "TypeScript",
@@ -43,6 +46,9 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         title: "EventPulse",
         subtitle: "Campus Web",
         category: "Full-Stack",
+        domain: "Campus Operations & Live Event Tracker",
+        tagline: "Academic, Sports & Career Hub",
+        accentColor: "#6366F1",
         stack: [
           "React",
           "TypeScript",
@@ -63,6 +69,9 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         title: "Auto Avenue IMS",
         subtitle: "Enterprise ERP",
         category: "Database & Web",
+        domain: "Automotive Inventory & Procurement Engine",
+        tagline: "Stock Optimization & Procurement Workflow",
+        accentColor: "#144A2A",
         stack: [
           "React",
           "TypeScript",
