@@ -13,8 +13,6 @@ import { EASE_OUT_EXPO, INTRO_DELAY, scrollToSection } from "../motion";
 /** Natural aspect ratio of /formalpic.png (transparent cut-out, 1056×976). */
 const PORTRAIT_ASPECT = "1056 / 976";
 
-const SURNAME = "Endaya";
-
 /** Tracks the lg breakpoint (1024px) so subtle scroll depth only runs on desktop. */
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(
@@ -42,28 +40,28 @@ export default function Hero() {
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const portraitY = useTransform(scrollYProgress, [0, 1], [0, depth ? 36 : 0]);
-  const nameY = useTransform(scrollYProgress, [0, 1], [0, depth ? -18 : 0]);
+  const portraitY = useTransform(scrollYProgress, [0, 1], [0, depth ? 32 : 0]);
+  const headlineY = useTransform(scrollYProgress, [0, 1], [0, depth ? -16 : 0]);
 
   const d = reduce ? 0 : INTRO_DELAY;
 
   /** Masked line reveal: content rises from below its own clipping box. */
   const lineReveal = (delay: number) => ({
-    initial: reduce ? false : { y: "118%" },
+    initial: reduce ? false : { y: "112%" },
     animate: { y: "0%" },
     transition: {
-      duration: reduce ? 0 : 1.0,
+      duration: reduce ? 0 : 0.88,
       delay: d + delay,
       ease: EASE_OUT_EXPO,
     },
   });
 
-  /** Quiet supporting entrance for copy and actions. */
+  /** Quiet supporting entrance for descriptor, copy, and actions. */
   const support = (delay: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 14 },
+    initial: reduce ? false : { opacity: 0, y: 12 },
     animate: { opacity: 1, y: 0 },
     transition: {
-      duration: reduce ? 0 : 0.78,
+      duration: reduce ? 0 : 0.72,
       delay: d + delay,
       ease: EASE_OUT_EXPO,
     },
@@ -81,54 +79,33 @@ export default function Hero() {
       aria-label="Introduction"
       className="relative overflow-hidden border-b border-black/[0.06] dark:border-white/[0.06] pt-24 sm:pt-28 lg:pt-32"
     >
-      {/* Unified Editorial Container — keeps Name, Copy, and Portrait proportionally aligned */}
+      {/* Unified Editorial Container — keeps Headline, Copy, and Portrait proportionally aligned */}
       <div className="max-w-site mx-auto px-6 md:px-12 lg:px-16 py-8 sm:py-10 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-x-6 xl:gap-x-10 items-center">
-          {/* ───────────────────── 1. Name Lockup (Top-Left on Desktop, 1st on Mobile/Tablet) ───────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12 items-center">
+          {/* ───────────────────── 1. Professional Descriptor & Two-Line Headline ───────────────────── */}
           <motion.div
-            style={{ y: nameY }}
+            style={{ y: headlineY }}
             className="order-1 lg:col-span-6 lg:row-start-1 relative z-20"
           >
+            {/* Step 1: Subtle professional descriptor */}
             <motion.p
-              {...support(0.05)}
-              className="font-mono text-[11px] sm:text-xs font-medium uppercase tracking-[0.2em] text-muted"
+              {...support(0.04)}
+              className="font-mono text-[11px] sm:text-xs font-medium uppercase tracking-[0.22em] text-muted"
             >
-              BS Information Technology
-              <span className="mx-2 text-ink/25" aria-hidden="true">
-                /
-              </span>
-              System Development
+              FULL-STACK DEVELOPMENT · PHILIPPINES
             </motion.p>
 
-            <h1 className="mt-5 sm:mt-6 text-ink select-none">
-              <span className="sr-only">Rhon Kelly Endaya</span>
-
-              {/* Line 1 — serif italic, the lighter editorial voice */}
-              <span
-                className="block overflow-hidden font-serif italic font-normal leading-[0.96] tracking-[-0.01em] text-[clamp(2.55rem,5.4vw,4.5rem)] pt-[0.08em] -mt-[0.08em] pb-[0.18em] -mb-[0.18em]"
-                aria-hidden="true"
-              >
-                <motion.span {...lineReveal(0.1)} className="block">
-                  Rhon Kelly
+            {/* Step 2: Primary Headline revealed in two lines via clipping masks */}
+            <h1 className="mt-5 sm:mt-6 font-display font-semibold text-ink tracking-[-0.032em] leading-[1.05] text-[clamp(2.35rem,4.6vw,4.25rem)]">
+              <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]">
+                <motion.span {...lineReveal(0.12)} className="block">
+                  Web applications,
                 </motion.span>
               </span>
-
-              {/* Line 2 — bold display surname, fluidly scaled so it never wraps or collides */}
-              <span
-                className="block overflow-hidden font-display font-extrabold leading-[0.88] tracking-tightest text-[clamp(3.4rem,8.8vw,7.1rem)] pt-[0.06em] -mt-[0.06em] pb-[0.2em] -mb-[0.2em] -ml-[0.03em] whitespace-nowrap"
-                aria-hidden="true"
-              >
-                <span className="inline-flex">
-                  {SURNAME.split("").map((char, i) => (
-                    <motion.span
-                      key={i}
-                      {...lineReveal(0.22 + i * 0.045)}
-                      className="inline-block"
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
-                </span>
+              <span className="block overflow-hidden pb-[0.14em] -mb-[0.14em]">
+                <motion.span {...lineReveal(0.2)} className="block">
+                  built around real needs.
+                </motion.span>
               </span>
             </h1>
           </motion.div>
@@ -140,6 +117,7 @@ export default function Hero() {
               style={{ aspectRatio: PORTRAIT_ASPECT }}
             >
               <motion.div style={{ y: portraitY }} className="w-full h-full">
+                {/* Step 4: Natural portrait reveal */}
                 <motion.img
                   src={profile.photo}
                   alt="Portrait of Rhon Kelly Endaya"
@@ -153,8 +131,8 @@ export default function Hero() {
                       ? false
                       : {
                           clipPath: "inset(100% 0% 0% 0%)",
-                          y: "4%",
-                          scale: 1.03,
+                          y: "3%",
+                          scale: 1.02,
                         }
                   }
                   animate={{
@@ -163,7 +141,7 @@ export default function Hero() {
                     scale: 1,
                   }}
                   transition={{
-                    duration: reduce ? 0 : 1.25,
+                    duration: reduce ? 0 : 1.08,
                     delay: d + 0.34,
                     ease: EASE_OUT_EXPO,
                   }}
@@ -173,29 +151,22 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* ───────────────────── 3. Introduction & Actions (Aligned Below Name on Left) ───────────────────── */}
-          <div className="order-3 lg:col-span-6 lg:row-start-2 relative z-20 pt-8 sm:pt-10 lg:pt-8">
+          {/* ───────────────────── 3. Supporting Statement & CTA Controls ───────────────────── */}
+          <div className="order-3 lg:col-span-6 lg:row-start-2 relative z-20 pt-6 sm:pt-8 lg:pt-7">
             <div className="max-w-[33rem]">
+              {/* Step 3: Supporting statement */}
               <motion.p
-                {...support(0.78)}
-                className="font-display text-lg sm:text-xl lg:text-[1.35rem] leading-[1.38] font-medium tracking-[-0.015em] text-ink"
+                {...support(0.28)}
+                className="font-body text-base sm:text-lg lg:text-[1.2rem] leading-[1.55] text-muted"
               >
-                I build web applications and software solutions focused on
-                usability, functionality, and real-world problems.
+                I develop functional digital experiences, from responsive
+                interfaces to backend systems.
               </motion.p>
 
-              <motion.p
-                {...support(0.86)}
-                className="mt-3.5 text-sm sm:text-[15px] leading-[1.68] text-muted"
-              >
-                Fourth-year student at De La Salle Lipa, working mainly with
-                React, TypeScript, Node.js, Express.js, and PHP.
-              </motion.p>
-
-              {/* Primary & Secondary Actions */}
+              {/* Step 5: CTA Controls */}
               <motion.div
-                {...support(0.94)}
-                className="mt-7 sm:mt-8 flex flex-wrap items-center gap-x-7 gap-y-4"
+                {...support(0.42)}
+                className="mt-8 sm:mt-9 flex flex-wrap items-center gap-x-7 gap-y-4"
               >
                 <a
                   href="#projects"
@@ -228,8 +199,8 @@ export default function Hero() {
 
               {/* Channels & Availability */}
               <motion.div
-                {...support(1.02)}
-                className="mt-8 sm:mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-muted"
+                {...support(0.5)}
+                className="mt-9 sm:mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-muted"
               >
                 <span className="inline-flex items-center gap-2 text-ink">
                   <span
