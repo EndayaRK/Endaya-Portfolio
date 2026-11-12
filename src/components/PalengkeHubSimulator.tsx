@@ -20,7 +20,6 @@ import {
   Search,
   ShoppingBag,
   Signal,
-  Sparkles,
   Tag,
   User,
   Wifi,
@@ -178,40 +177,203 @@ export default function PalengkeHubSimulator({
       : PRODUCTS.filter((p) => p.category === selectedCategory);
 
   return (
-    <div
+    <article
       id="palengkehub"
-      className={`w-full rounded-2xl border transition-all duration-300 p-6 sm:p-8 lg:p-10 backdrop-blur-md ${
-        isHighlighted
-          ? "border-ink shadow-[0_12px_36px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_12px_36px_-6px_rgb(0_0_0/0.6)] ring-2 ring-ink bg-white/90 dark:bg-[#16161A]/95"
-          : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20"
+      className={`w-full transition-opacity duration-300 ${
+        isHighlighted ? "ring-1 ring-ink/30 rounded-2xl p-2 sm:p-4" : ""
       }`}
     >
-      {/* Top Banner Tag */}
-      <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/5 dark:border-white/5">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D95B16] text-white font-bold tracking-wide shadow-xs">
-            <Sparkles size={11} />
-            ★ FEATURED CAPSTONE PROJECT
-          </span>
-          <span className="text-muted/40">·</span>
-          <span className="font-mono text-muted">v1.2 Production</span>
-          <span className="text-muted/40">·</span>
-          <span className="text-muted">Lipa City Public Market</span>
-        </div>
-        <span className="text-xs font-semibold text-[#1E5136] dark:text-emerald-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Interactive 1:1 Live Simulator
-        </span>
-      </div>
+      {/* ── Featured Editorial Spread: Case Study (Left) + Mobile Stage (Right) ── */}
+      <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        {/* ── Left Column: Editorial Case Study Narrative ── */}
+        <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col justify-between space-y-10 lg:pt-2">
+          {/* 1. Project Identity & Overview */}
+          <div data-project-copy className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              <span className="text-ink font-semibold">01</span>
+              <span className="opacity-30">/</span>
+              <span>Mobile Application</span>
+              <span className="opacity-30">·</span>
+              <span>Lipa City, Batangas</span>
+            </div>
 
-      {/* 2-Column Showcase */}
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        {/* ── Left Column: Interactive Mobile Phone Simulator (Exact Design System) ── */}
-        <div className="lg:col-span-5 w-full flex flex-col items-center justify-center">
-          {/* Chassis Frame */}
-          <div className="w-full max-w-[375px] mx-auto rounded-[42px] border-4 border-[#222226] bg-[#0A0A0C] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.55)] p-2.5 overflow-hidden aspect-[9/18.5] flex flex-col relative select-none">
+            <div className="space-y-3">
+              <h3 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-semibold text-ink tracking-[-0.03em] leading-[1.06]">
+                PalengkeHub
+              </h3>
+              <p className="font-display text-lg sm:text-xl font-medium text-ink/85 tracking-[-0.015em] leading-[1.35]">
+                Digital marketplace and price-comparison platform for Lipa City Public Market.
+              </p>
+            </div>
+
+            <p className="font-body text-sm sm:text-[15px] leading-[1.75] text-muted max-w-xl">
+              Designed to complement traditional public-market shopping at Lipa City Public
+              Market by making practical digital tools available as technology and consumer
+              expectations evolve. The platform brings consumers, stall vendors, and market
+              administrators together in one integrated system.
+            </p>
+
+            {/* Project Purpose & Intended Capabilities */}
+            <div className="pt-2 space-y-2.5">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                Project Objectives &amp; Capabilities
+              </p>
+              <ul className="space-y-1.5 text-xs sm:text-[13.5px] text-muted leading-[1.65]">
+                <li className="flex items-baseline gap-2.5">
+                  <span className="font-mono text-[10px] text-ink/60 select-none">—</span>
+                  <span>
+                    Help consumers save time through preordering and locate vendors using
+                    stall-location information.
+                  </span>
+                </li>
+                <li className="flex items-baseline gap-2.5">
+                  <span className="font-mono text-[10px] text-ink/60 select-none">—</span>
+                  <span>
+                    Provide vendors a platform to promote their products and explore broader
+                    business opportunities alongside in-person stall sales.
+                  </span>
+                </li>
+                <li className="flex items-baseline gap-2.5">
+                  <span className="font-mono text-[10px] text-ink/60 select-none">—</span>
+                  <span>
+                    Assist administrators in organizing market operations and reducing manual
+                    administrative work through a unified system.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 2. Role & Personal Contributions */}
+          <div
+            data-project-copy
+            className="pt-8 border-t border-black/10 dark:border-white/10 space-y-6"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                Role &amp; Contributions
+              </span>
+              <span className="font-display text-sm font-semibold text-ink">
+                Frontend Developer &amp; UI Designer
+              </span>
+            </div>
+
+            <dl className="space-y-4 text-sm">
+              <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+                <dt className="font-mono text-[11px] text-muted">01</dt>
+                <dd className="text-muted leading-[1.68]">
+                  <strong className="text-ink font-medium">
+                    Presyo Check Price Comparison:
+                  </strong>{" "}
+                  Built the real-time vendor comparison view so market-goers can inspect
+                  per-kilo pricing across wet and dry stalls before ordering.
+                </dd>
+              </div>
+
+              <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+                <dt className="font-mono text-[11px] text-muted">02</dt>
+                <dd className="text-muted leading-[1.68]">
+                  <strong className="text-ink font-medium">
+                    Stall Pickup Ticketing Flow:
+                  </strong>{" "}
+                  Designed the mobile-first cart, scheduled collection windows, and instant
+                  claim ticket workflow (e.g., <span className="font-mono text-xs text-ink">PH-2416</span>)
+                  with zero delivery fees.
+                </dd>
+              </div>
+
+              <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+                <dt className="font-mono text-[11px] text-muted">03</dt>
+                <dd className="text-muted leading-[1.68]">
+                  <strong className="text-ink font-medium">
+                    Responsive Client Architecture:
+                  </strong>{" "}
+                  Engineered modular React, TypeScript, and Tailwind CSS views optimized for
+                  smartphone shoppers and fast-paced market vendors.
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          {/* 3. Typographic Technology Stack & Editorial Links */}
+          <div
+            data-project-copy
+            className="pt-8 border-t border-black/10 dark:border-white/10 space-y-7"
+          >
+            <div className="space-y-2.5">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                Technology Stack
+              </p>
+              <p className="font-mono text-xs sm:text-[13px] text-ink/90 leading-relaxed tracking-tight">
+                {["React", "TypeScript", "Tailwind CSS", "Node.js", "Express.js", "REST API"].join(
+                  "   ·   "
+                )}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 pt-1">
+              <a
+                href="https://www.palengkehub.site/"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-medium text-cta-primary-text bg-ink hover:opacity-90 rounded-full px-6 py-3 transition-all group"
+              >
+                <span>Visit Live Site</span>
+                <ArrowUpRight
+                  size={15}
+                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                />
+              </a>
+
+              <a
+                href="https://github.com/EndayaRK/PalengkeHubFinal"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-ink border border-black/15 dark:border-white/15 hover:border-ink dark:hover:border-white rounded-full px-5 py-3 transition-colors group"
+              >
+                <Github size={14} />
+                <span>GitHub Repository</span>
+                <ArrowUpRight
+                  size={14}
+                  className="opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right Column: Interactive Mobile Application Stage ── */}
+        <div
+          data-project-preview
+          className="lg:col-span-6 order-1 lg:order-2 w-full flex flex-col items-center"
+        >
+          <div className="w-full rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-5 sm:p-8 lg:p-10 flex flex-col items-center">
+            {/* Minimal Editorial Stage Caption */}
+            <div className="w-full max-w-[375px] flex items-center justify-between gap-2 pb-4 mb-2 border-b border-black/8 dark:border-white/8 text-[11px] font-mono text-muted">
+              <span className="uppercase tracking-[0.16em]">
+                Interactive Mobile Preview
+              </span>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1 text-muted hover:text-ink transition-colors cursor-pointer"
+                title="Reset simulator state"
+              >
+                <RotateCcw size={11} />
+                <span>Reset</span>
+              </button>
+            </div>
+
+            {/* Chassis Frame */}
+            <div
+              data-lenis-prevent
+              className="w-full max-w-[375px] mx-auto rounded-[42px] border-4 border-[#222226] bg-[#0A0A0C] shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] p-2.5 overflow-hidden aspect-[9/18.5] flex flex-col relative select-none"
+            >
             {/* Screen Canvas (Warm Pale Linen Canvas: #FBF7EE) */}
-            <div className="rounded-[32px] bg-[#FBF7EE] text-[#1C1917] flex flex-col h-full overflow-hidden text-xs relative font-sans shadow-inner">
+            <div
+              data-lenis-prevent
+              className="rounded-[32px] bg-[#FBF7EE] text-[#1C1917] flex flex-col h-full overflow-hidden text-xs relative font-sans shadow-inner"
+            >
               {/* Status Bar */}
               <div className="pt-2 px-5 pb-1 flex items-center justify-between text-[11px] font-semibold text-[#1C1917]/80 bg-transparent shrink-0">
                 <span>9:41</span>
@@ -279,7 +441,10 @@ export default function PalengkeHubSimulator({
               )}
 
               {/* Scrollable Screen Body */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#FBF7EE]">
+              <div
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#FBF7EE]"
+              >
                 {/* ── VIEW: HOME (PRESTYO CHECK & DISCOVERY) ── */}
                 {activeTab === "home" && (
                   <div className="space-y-3">
@@ -488,7 +653,10 @@ export default function PalengkeHubSimulator({
                       </div>
                     ) : (
                       <>
-                        <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
+                        <div
+                          data-lenis-prevent
+                          className="space-y-2 max-h-[190px] overflow-y-auto pr-1"
+                        >
                           {cartItems.map((item) => {
                             const qty = quantities[item.id] || 0;
                             return (
@@ -802,137 +970,14 @@ export default function PalengkeHubSimulator({
                 </button>
               </div>
             </div>
-          </div>
-
-          <div className="mt-3 text-center text-[11px] text-muted font-mono flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Interactive PalengkeHub Simulator · Lipa City Live</span>
-          </div>
-        </div>
-
-        {/* ── Right Column: Executive Project Summary & Engineering Highlights ── */}
-        <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          <div>
-            <div className="inline-flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-md border border-[#D95B16]/30 bg-[#D95B16]/10 text-[#D95B16] text-xs font-bold uppercase tracking-wider">
-                ★ FEATURED CAPSTONE PROJECT
-              </span>
-              <span className="text-xs font-mono text-muted">Lipa City, Batangas</span>
             </div>
 
-            <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">
-              PalengkeHub — Digital Marketplace &amp; Price Comparator for Lipa City Public Market
-            </h3>
-
-            <p className="text-xs font-semibold text-[#D95B16] uppercase tracking-wider mt-1.5">
-              Role: Frontend Developer &amp; UI Designer (Lead Frontend Architecture)
-            </p>
-
-            <p className="text-sm sm:text-base leading-relaxed text-muted mt-4">
-              Designed and engineered the frontend interface and vendor comparison workflow for Lipa
-              City's public market. Solved morning stall congestion by enabling residents to
-              compare real-time vendor prices per kilo, order ahead, and pick up fresh produce without
-              waiting in lines.
-            </p>
-
-            {/* Key Technical Contributions */}
-            <div className="mt-6 space-y-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-ink">
-                Key Technical Contributions
-              </p>
-              <ul className="space-y-2 text-xs sm:text-sm text-muted">
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#D95B16] font-bold select-none mt-0.5">
-                    1.
-                  </span>
-                  <span className="leading-relaxed">
-                    <strong>Built the "Presyo Check" engine</strong> allowing market-goers to
-                    compare real-time vendor unit pricing per kilo across wet and dry stalls with
-                    dynamic price benchmarking.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#D95B16] font-bold select-none mt-0.5">
-                    2.
-                  </span>
-                  <span className="leading-relaxed">
-                    <strong>Designed the mobile-first UX with zero-delivery-fee pickup ticketing</strong>{" "}
-                    and scheduled stall collection windows with instant claim codes (e.g., PH-2416).
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#D95B16] font-bold select-none mt-0.5">
-                    3.
-                  </span>
-                  <span className="leading-relaxed">
-                    <strong>Engineered responsive client components using React, TypeScript, and Tailwind CSS</strong>{" "}
-                    tailored for fast-paced market vendors and smartphone shoppers with low latency.
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-black/5 dark:border-white/5 space-y-5">
-            {/* Tech Stack Badges */}
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted mb-2.5">
-                Technologies Used
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  "React",
-                  "TypeScript",
-                  "Tailwind CSS",
-                  "Node.js",
-                  "Express.js",
-                  "REST API",
-                ].map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-xs font-medium text-ink bg-surface-strong border border-black/5 dark:border-white/10 rounded-md px-3 py-1 shadow-xs"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* External CTAs */}
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="https://www.palengkehub.site/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white bg-[#D95B16] hover:bg-[#c24f11] rounded-full px-6 py-3 transition-all shadow-md group"
-              >
-                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                <span>Visit Live Landing Page</span>
-                <ArrowUpRight
-                  size={14}
-                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-                />
-              </a>
-
-              <a
-                href="https://github.com/EndayaRK/PalengkeHubFinal"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong rounded-full px-5 py-3 transition-colors shadow-xs"
-              >
-                <Github size={14} />
-                <span>View GitHub Repository</span>
-                <ArrowUpRight size={13} />
-              </a>
-
-              <span className="text-xs text-muted font-medium ml-auto hidden sm:inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Production Deployment Active</span>
-              </span>
+            <div className="mt-4 text-center text-[11px] text-muted font-mono">
+              <span>Operate tabs, compare prices, or reserve a stall pickup ticket above</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

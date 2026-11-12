@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Menu, Search, Sparkles, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, CornerDownLeft, Menu, Search, Sparkles, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import { EASE_OUT_EXPO, INTRO_DELAY, scrollToSection } from "../motion";
 
 interface NavigationProps {
   onOpenAi?: () => void;
 }
 
 const navItems = [
-  { label: "Overview", href: "#overview" },
-  { label: "Projects", href: "#projects" },
+  { label: "About", href: "#overview" },
+  { label: "Work", href: "#projects" },
   { label: "Skills", href: "#skills" },
   { label: "Credentials", href: "#certificates" },
   { label: "Contact", href: "#contact" },
@@ -151,324 +154,409 @@ const SEARCH_TARGETS: SearchTarget[] = [
 ];
 
 export default function Navigation({ onOpenAi }: NavigationProps) {
-  const [activeSection, setActiveSection] = useState<string>("overview");
+  const reduce = useReducedMotion() ?? false;
+  const [activeSection, setActiveSection] = useState<string>("top");
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Compact Search state
+  // Search state
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchTarget[]>([]);
+  const [highlight, setHighlight] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const query = searchQuery.toLowerCase().trim();
+  const searchResults = query
+    ? SEARCH_TARGETS.filter(
+        (item) =>
+          item.label.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query) ||
+          item.keywords.some((k) => k.toLowerCase().includes(query))
+      )
+    : SEARCH_TARGETS;
 
+  // ── Scroll state: active section + header surface ──
   useEffect(() => {
     function handleScroll() {
-      const sections = [
-        "contact",
-        "certificates",
-        "skills",
-        "projects",
-        "overview",
-      ];
+      setScrolled(window.scrollY > 16);
+      const sections = ["contact", "certificates", "skills", "projects", "overview"];
       const scrollPosition = window.scrollY + 140;
-
+      let current = "top";
       for (const sectionId of sections) {
         const el = document.getElementById(sectionId);
-        if (el && scrollPosition >= el.offsetTop) {
-          setActiveSection(sectionId);
-          break;
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          if (scrollPosition >= top) {
+            current = sectionId;
+            break;
+          }
         }
       }
+      setActiveSection(current);
     }
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Filter search targets
-  useEffect(() => {
-    const q = searchQuery.toLowerCase().trim();
-    if (!q) {
-      setSearchResults([]);
-      return;
-    }
-    const matches = SEARCH_TARGETS.filter(
-      (item) =>
-        item.label.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q) ||
-        item.keywords.some((k) => k.toLowerCase().includes(q))
-    );
-    setSearchResults(matches);
-  }, [searchQuery]);
-
-  // Handle outside click to close dropdown
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(e.target as Node)
-      ) {
-        setIsSearchFocused(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+  const openSearch = useCallback(() => {
+    setMobileMenuOpen(false);
+    setSearchOpen(true);
   }, []);
 
-  const handleJumpToTarget = (target: SearchTarget) => {
-    const el = document.getElementById(target.targetId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery("");
+    setHighlight(0);
+    searchTriggerRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  // ── Global shortcuts: "/" opens search, Escape closes overlays ──
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      const isTyping =
+        !!target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+
+      if (e.key === "/" && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        openSearch();
+      } else if (e.key === "Escape") {
+        if (mobileMenuOpen) setMobileMenuOpen(false);
+      }
     }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileMenuOpen, openSearch]);
+
+  // Focus the search field when the panel opens
+  useEffect(() => {
+    if (searchOpen) {
+      const id = window.setTimeout(() => searchInputRef.current?.focus(), 30);
+      return () => window.clearTimeout(id);
+    }
+  }, [searchOpen]);
+
+  // Pause smooth scrolling while the full-screen mobile menu is open
+  useEffect(() => {
+    const lenis = (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis;
+    if (mobileMenuOpen) {
+      lenis?.stop();
+      document.documentElement.style.overflow = "hidden";
+    }
+    return () => {
+      lenis?.start();
+      document.documentElement.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  const handleJumpToTarget = (target: SearchTarget) => {
+    scrollToSection(target.targetId);
     if (target.projectId) {
       window.dispatchEvent(
-        new CustomEvent("select-portfolio-project", {
-          detail: target.projectId,
-        })
+        new CustomEvent("select-portfolio-project", { detail: target.projectId })
       );
     }
+    setSearchOpen(false);
     setSearchQuery("");
-    setIsSearchFocused(false);
+    setHighlight(0);
     setMobileMenuOpen(false);
   };
 
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchResults.length > 0) {
+  const handleSearchKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
-      handleJumpToTarget(searchResults[0]);
+      setHighlight((h) => Math.min(h + 1, Math.max(searchResults.length - 1, 0)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlight((h) => Math.max(h - 1, 0));
+    } else if (e.key === "Enter" && searchResults.length > 0) {
+      e.preventDefault();
+      handleJumpToTarget(searchResults[Math.min(highlight, searchResults.length - 1)]);
     } else if (e.key === "Escape") {
-      setIsSearchFocused(false);
-      setSearchQuery("");
+      e.preventDefault();
+      closeSearch();
     }
   };
 
-  return (
-    <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#FBF9F5]/85 dark:bg-[#0A0A0C]/85 border-b border-black/5 dark:border-white/5 transition-all duration-300 py-3">
-      <div className="max-w-site mx-auto px-6 md:px-10 flex items-center justify-between gap-3">
-        {/* Wordmark */}
-        <a
-          href="#top"
-          className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 rounded-lg group select-none shrink-0"
-          aria-label="Rhon Kelly Endaya — Back to top"
-        >
-          <img
-            src="/RK_logo_original.png"
-            alt="RK Logo"
-            className="w-8 h-8 sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-all brightness-0 dark:brightness-100"
-          />
-          <span className="font-display text-base font-bold text-ink tracking-tight">
-            Rhon Kelly Endaya
-          </span>
-        </a>
+  const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    if (href === "#top") {
+      const lenis = (window as unknown as { lenis?: { scrollTo: (t: number) => void } }).lenis;
+      if (lenis) lenis.scrollTo(0);
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    scrollToSection(href.slice(1));
+  };
 
-        {/* Center: Desktop Nav Links & Compact Search Input */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3">
-          <nav
-            className="flex items-center gap-0.5 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-full px-2 py-1 text-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none"
-            aria-label="Primary navigation"
+  const surface = scrolled || mobileMenuOpen;
+
+  return (
+    <>
+      <motion.header
+        initial={reduce ? false : { opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduce ? 0 : 0.9, delay: reduce ? 0 : INTRO_DELAY + 0.75, ease: EASE_OUT_EXPO }}
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-500 border-b ${
+          surface
+            ? "bg-[#FBF9F5]/85 dark:bg-[#0A0A0C]/85 backdrop-blur-md border-black/[0.06] dark:border-white/[0.06]"
+            : "bg-transparent border-transparent"
+        }`}
+      >
+        <div className="max-w-site mx-auto px-6 md:px-10 h-16 sm:h-[72px] flex items-center justify-between gap-6">
+          {/* Wordmark */}
+          <a
+            href="#top"
+            onClick={(e) => handleNavClick(e, "#top")}
+            className="group flex items-center gap-2.5 shrink-0 rounded-md"
+            aria-label="Rhon Kelly Endaya — back to top"
           >
+            <img
+              src="/RK_logo_original.png"
+              alt=""
+              className="h-7 w-7 object-contain brightness-0 dark:brightness-100 transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="text-[13px] font-semibold tracking-[-0.01em] text-ink">
+              Rhon Kelly Endaya
+            </span>
+          </a>
+
+          {/* Primary links — plain text, no container */}
+          <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
             {navItems.map((item) => {
               const isActive = activeSection === item.href.slice(1);
               return (
                 <a
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-full font-medium transition-all text-xs lg:text-[13px] ${
-                    isActive
-                      ? "bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold"
-                      : "text-muted hover:text-ink hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  aria-current={isActive ? "true" : undefined}
+                  className={`relative py-1 text-[13px] font-medium transition-colors ${
+                    isActive ? "text-ink" : "text-muted hover:text-ink"
                   }`}
                 >
                   {item.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute left-1/2 -bottom-1.5 h-1 w-1 -translate-x-1/2 rounded-full bg-ink transition-all duration-300 ${
+                      isActive ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                    }`}
+                  />
                 </a>
               );
             })}
           </nav>
 
-          {/* ── Compact Search Pill Beside Nav Links ── */}
-          <div ref={searchContainerRef} className="relative">
-            <div className="h-8 px-3 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs text-muted flex items-center gap-2 max-w-[180px] sm:max-w-[210px] focus-within:max-w-[240px] focus-within:border-black/20 dark:focus-within:border-white/20 focus-within:ring-2 focus-within:ring-ink/10 transition-all shadow-inner">
-              <Search size={13} className="text-muted shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="Search portfolio..."
-                className="bg-transparent border-none outline-none text-ink placeholder:text-muted w-full text-xs font-medium"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="text-muted hover:text-ink p-0.5 cursor-pointer"
-                >
-                  <X size={12} />
-                </button>
-              )}
-            </div>
-
-            {/* Quick Live Dropdown Results */}
-            {isSearchFocused && searchResults.length > 0 && (
-              <div className="absolute top-10 left-0 right-0 sm:w-72 bg-white dark:bg-[#16161B] border border-black/10 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden py-1 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-muted border-b border-black/5 dark:border-white/5">
-                  Matching Sections &amp; Projects
-                </div>
-                <div className="max-h-60 overflow-y-auto divide-y divide-black/5 dark:divide-white/5">
-                  {searchResults.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleJumpToTarget(item)}
-                      className="w-full text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-between text-xs cursor-pointer group"
-                    >
-                      <div>
-                        <div className="font-semibold text-ink group-hover:underline">
-                          {item.label}
-                        </div>
-                        <div className="text-[10px] text-muted">
-                          Jump to #{item.targetId}
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted">
-                        {item.category}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Utility Strip */}
-        <div className="flex items-center gap-2">
-          {/* Dedicated "Ask AI" Button (Triggers Floating Messenger Chatbot) */}
-          <button
-            type="button"
-            onClick={onOpenAi}
-            aria-label="Ask AI Assistant"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-black/5 hover:bg-black/10 text-[#1A1A18] border border-black/5 dark:bg-white/10 dark:hover:bg-white/15 dark:text-[#F3F3F5] dark:border-white/10 shadow-xs cursor-pointer group"
-          >
-            <Sparkles
-              size={13}
-              className="text-amber-600 dark:text-amber-400 group-hover:rotate-12 transition-transform"
-            />
-            <span>Ask AI</span>
-          </button>
-
-          {/* "Get in Touch" — primary CTA */}
-          <a
-            href="#contact"
-            className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full bg-cta-primary text-cta-primary-text hover:opacity-85 transition-opacity shadow-sm"
-          >
-            Get in Touch
-            <ArrowUpRight size={13} strokeWidth={2.5} />
-          </a>
-
-          {/* Theme toggle */}
-          <ThemeToggle />
-
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-black/5 dark:border-white/10 text-ink bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md hover:bg-surface-strong transition-colors cursor-pointer"
-          >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-black/5 dark:border-white/10 bg-[#FBF9F5]/98 dark:bg-[#0A0A0C]/98 backdrop-blur-xl px-6 py-5 space-y-3 animate-[slideDown_0.2s_ease-out_both]">
-          {/* Mobile Search input */}
-          <div className="h-9 px-3 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 text-xs text-muted flex items-center gap-2">
-            <Search size={14} className="text-muted shrink-0" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="Search portfolio..."
-              className="bg-transparent border-none outline-none text-ink placeholder:text-muted w-full text-xs font-medium"
-            />
-            {searchQuery && (
+          {/* Utilities */}
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="flex items-center">
               <button
+                ref={searchTriggerRef}
                 type="button"
-                onClick={() => setSearchQuery("")}
-                className="text-muted hover:text-ink p-0.5 cursor-pointer"
+                onClick={openSearch}
+                aria-label="Search the portfolio (shortcut: /)"
+                aria-keyshortcuts="/"
+                aria-haspopup="dialog"
+                aria-expanded={searchOpen}
+                className="h-9 w-9 grid place-items-center rounded-full text-muted hover:text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
               >
-                <X size={13} />
+                <Search size={16} strokeWidth={1.9} />
               </button>
-            )}
-          </div>
-
-          {/* Search results in mobile */}
-          {searchResults.length > 0 && (
-            <div className="bg-white dark:bg-[#16161B] rounded-xl border border-black/10 dark:border-white/10 p-1 divide-y divide-black/5 dark:divide-white/5">
-              {searchResults.slice(0, 4).map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => handleJumpToTarget(item)}
-                  className="w-full text-left px-3 py-2 text-xs flex items-center justify-between font-medium text-ink cursor-pointer"
-                >
-                  <span>{item.label}</span>
-                  <span className="text-[10px] text-muted font-mono">
-                    #{item.targetId}
-                  </span>
-                </button>
-              ))}
+              <span
+                aria-hidden="true"
+                className="hidden xl:inline-block font-mono text-[11px] text-muted/45 select-none pointer-events-none -ml-0.5 mr-1"
+              >
+                /
+              </span>
             </div>
-          )}
 
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {navItems.map((item) => {
-              const isActive = activeSection === item.href.slice(1);
-              return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition-all text-center ${
-                    isActive
-                      ? "bg-black/5 dark:bg-white/10 text-black dark:text-white border-black/10 dark:border-white/15 font-semibold"
-                      : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 text-muted hover:text-ink hover:bg-surface-strong"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
+            <button
+              type="button"
+              onClick={onOpenAi}
+              aria-label="Ask the AI assistant (Ctrl+K)"
+              className="h-9 inline-flex items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            >
+              <Sparkles size={14} strokeWidth={1.9} className="text-ink" />
+              <span className="hidden sm:inline">Ask AI</span>
+            </button>
+
+            <ThemeToggle />
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+              className="lg:hidden h-9 w-9 grid place-items-center rounded-full text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenAi?.();
-            }}
-            className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-xl border border-black/5 dark:border-white/10 bg-black/5 hover:bg-black/10 text-[#1A1A18] dark:bg-white/10 dark:hover:bg-white/15 dark:text-[#F3F3F5] transition-all shadow-xs cursor-pointer"
-          >
-            <Sparkles size={14} className="text-amber-600 dark:text-amber-400" />
-            <span>Open AI Chatbot</span>
-          </button>
-
-          <a
-            href="#contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-xl bg-cta-primary text-cta-primary-text hover:opacity-85 transition-opacity shadow-sm"
-          >
-            Get in Touch
-            <ArrowUpRight size={15} />
-          </a>
         </div>
-      )}
-    </header>
+      </motion.header>
+
+      {/* ───────────── Mobile menu: editorial full-screen index ───────────── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            id="mobile-menu"
+            key="mobile-menu"
+            initial={reduce ? false : { clipPath: "inset(0% 0% 100% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={reduce ? { opacity: 0 } : { clipPath: "inset(0% 0% 100% 0%)" }}
+            transition={{ duration: reduce ? 0 : 0.6, ease: EASE_OUT_EXPO }}
+            className="lg:hidden fixed inset-x-0 top-16 sm:top-[72px] bottom-0 z-30 bg-[#FBF9F5] dark:bg-[#0A0A0C] overflow-y-auto"
+            data-lenis-prevent
+          >
+            <nav aria-label="Mobile" className="px-6 md:px-10 pt-8 pb-10 flex flex-col min-h-full">
+              <ul className="space-y-1">
+                {navItems.map((item, i) => {
+                  const isActive = activeSection === item.href.slice(1);
+                  return (
+                    <li key={item.href} className="overflow-hidden">
+                      <motion.a
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href)}
+                        initial={reduce ? false : { y: "100%" }}
+                        animate={{ y: "0%" }}
+                        transition={{ duration: reduce ? 0 : 0.7, delay: reduce ? 0 : 0.08 + i * 0.05, ease: EASE_OUT_EXPO }}
+                        className={`flex items-baseline gap-4 py-1.5 font-display text-[2.6rem] sm:text-5xl font-bold tracking-[-0.035em] leading-tight ${
+                          isActive ? "text-ink" : "text-ink/45 hover:text-ink"
+                        }`}
+                      >
+                        {item.label}
+                        {isActive && <span className="h-2 w-2 rounded-full bg-ink" aria-hidden="true" />}
+                      </motion.a>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="mt-auto pt-10 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={openSearch}
+                  className="h-12 inline-flex items-center justify-center gap-2 rounded-full border border-black/10 dark:border-white/15 text-sm font-medium text-ink"
+                >
+                  <Search size={15} /> Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenAi?.();
+                  }}
+                  className="h-12 inline-flex items-center justify-center gap-2 rounded-full bg-cta-primary text-cta-primary-text text-sm font-semibold"
+                >
+                  <Sparkles size={15} /> Ask AI
+                </button>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────── Search panel ───────────── */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            key="search"
+            className="fixed inset-0 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.2 }}
+          >
+            <button
+              type="button"
+              aria-label="Close search"
+              tabIndex={-1}
+              onClick={closeSearch}
+              className="absolute inset-0 bg-[#1A1A18]/20 dark:bg-black/50 cursor-default"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Search the portfolio"
+              initial={reduce ? false : { opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={{ duration: reduce ? 0 : 0.35, ease: EASE_OUT_EXPO }}
+              className="relative mx-auto mt-20 sm:mt-24 w-[calc(100%-2rem)] max-w-xl rounded-2xl bg-[#FBF9F5] dark:bg-[#141416] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.06] dark:ring-white/[0.08] overflow-hidden"
+            >
+              <div className="flex items-center gap-3 px-5 h-14 border-b border-black/[0.06] dark:border-white/[0.08]">
+                <Search size={17} className="text-muted shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setHighlight(0);
+                  }}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder="Search projects, skills, sections…"
+                  aria-label="Search query"
+                  aria-controls="search-results"
+                  className="flex-1 bg-transparent outline-none text-[15px] text-ink placeholder:text-muted"
+                />
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  className="text-[11px] font-medium text-muted hover:text-ink border border-black/10 dark:border-white/15 rounded px-1.5 py-0.5"
+                >
+                  Esc
+                </button>
+              </div>
+
+              <ul
+                id="search-results"
+                role="listbox"
+                className="max-h-[min(60vh,420px)] overflow-y-auto py-2"
+                data-lenis-prevent
+              >
+                {searchResults.length === 0 && (
+                  <li className="px-5 py-8 text-center text-sm text-muted">
+                    No matches for “{searchQuery}”.
+                  </li>
+                )}
+                {searchResults.map((item, i) => {
+                  const isHighlighted = i === highlight;
+                  return (
+                    <li key={item.id} role="option" aria-selected={isHighlighted}>
+                      <button
+                        type="button"
+                        onMouseEnter={() => setHighlight(i)}
+                        onClick={() => handleJumpToTarget(item)}
+                        className={`w-full flex items-center justify-between gap-4 px-5 py-3 text-left transition-colors ${
+                          isHighlighted ? "bg-black/[0.04] dark:bg-white/[0.05]" : ""
+                        }`}
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-medium text-ink truncate">{item.label}</span>
+                          <span className="block text-xs text-muted mt-0.5">{item.category}</span>
+                        </span>
+                        {isHighlighted ? (
+                          <CornerDownLeft size={14} className="text-muted shrink-0" />
+                        ) : (
+                          <ArrowUpRight size={14} className="text-muted/50 shrink-0" />
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

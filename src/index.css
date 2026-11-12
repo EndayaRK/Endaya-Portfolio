@@ -28,6 +28,10 @@
   --c-secondary-cta-text: 26 26 24;    /* #1A1A18 */
 
   --c-overlay: 26 26 24;
+
+  /* Editorial tonal plane & monochrome highlight token */
+  --c-plane:            236 231 222;   /* #ECE7DE — warm stone */
+  --c-accent:           26  26  24;    /* #1A1A18 — pure charcoal ink (no orange) */
 }
 
 .dark {
@@ -54,9 +58,33 @@
   --c-secondary-cta-text: 243 243 245; /* #F3F3F5 */
 
   --c-overlay: 10 10 12;
+
+  --c-plane:            25  25  28;    /* #19191C — lifted charcoal */
+  --c-accent:           243 243 245;   /* #F3F3F5 — soft off-white (no orange) */
 }
 
 /* ─── Base ─────────────────────────────────────────────────────────────── */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
 
 html {
   scroll-behavior: smooth;

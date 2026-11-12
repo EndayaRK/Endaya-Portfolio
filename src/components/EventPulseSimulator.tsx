@@ -8,7 +8,6 @@ import {
   Clock,
   ExternalLink,
   Github,
-  Lock,
   MapPin,
   Moon,
   RotateCw,
@@ -210,80 +209,111 @@ export default function EventPulseSimulator({
   };
 
   return (
-    <div
+    <article
       id="event-tracker"
-      className={`w-full rounded-2xl border transition-all duration-300 p-6 sm:p-8 lg:p-10 backdrop-blur-md ${
-        isHighlighted
-          ? "border-ink shadow-[0_12px_36px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_12px_36px_-6px_rgb(0_0_0/0.6)] ring-2 ring-ink bg-white/90 dark:bg-[#16161A]/95"
-          : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20"
+      className={`w-full space-y-10 lg:space-y-12 transition-opacity duration-300 ${
+        isHighlighted ? "ring-1 ring-ink/30 rounded-2xl p-2 sm:p-4" : ""
       }`}
     >
-      {/* ── Top Banner Tag (Portfolio Showcase Header) ── */}
-      <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/5 dark:border-white/5">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white font-bold tracking-wide shadow-xs">
-            <Sparkles size={11} />
-            ★ FEATURED FULL-STACK PROJECT
-          </span>
-          <span className="text-muted/40">·</span>
-          <span className="font-mono text-muted">v3.2 Production</span>
-          <span className="text-muted/40">·</span>
-          <span className="text-muted">University Campus Operations</span>
+      {/* ── 1. Editorial Case Study Header ── */}
+      <div
+        data-project-copy
+        className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-black/10 dark:border-white/10"
+      >
+        <div className="space-y-3 max-w-2xl">
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            <span className="text-ink font-semibold">02</span>
+            <span className="opacity-30">/</span>
+            <span>Full-Stack Web Application</span>
+            <span className="opacity-30">·</span>
+            <span>Campus Event Management</span>
+          </div>
+
+          <h3 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-semibold text-ink tracking-[-0.03em] leading-[1.06]">
+            EventPulse
+          </h3>
+
+          <p className="font-display text-lg sm:text-xl font-medium text-ink/85 tracking-[-0.015em] leading-[1.35]">
+            Campus event management and registration system.
+          </p>
         </div>
-        <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Interactive Desktop Sandbox
-        </span>
-      </div>
 
-      {/* ── Desktop Browser Sandbox Container ── */}
-      <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#141416] shadow-2xl overflow-hidden w-full max-w-4xl mx-auto flex flex-col transition-colors duration-300">
-        {/* ── Browser Header Chrome ── */}
-        <div className="px-4 py-3 bg-[#F4F4F6] dark:bg-[#1C1C20] border-b border-black/10 dark:border-white/10 flex items-center justify-between gap-3 select-none">
-          {/* Traffic light dots */}
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/40 inline-block shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/40 inline-block shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/40 inline-block shadow-inner" />
-          </div>
-
-          {/* URL Address Bar */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/[0.05] dark:bg-white/[0.07] border border-black/[0.08] dark:border-white/[0.1] text-xs font-mono text-[#52525B] dark:text-[#A1A1AA] flex-1 max-w-md mx-auto justify-between shadow-inner">
-            <div className="flex items-center gap-2 truncate">
-              <Lock size={12} className="text-emerald-500 shrink-0" />
-              <span className="truncate">
-                https://itelect4-project-rho.vercel.app/
-                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
-                  {activeTab}
-                </span>
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={handleRefresh}
-              aria-label="Refresh simulator"
-              className="hover:text-ink transition-colors shrink-0"
-            >
-              <RotateCw
-                size={12}
-                className={isRefreshing ? "animate-spin text-indigo-500" : ""}
-              />
-            </button>
-          </div>
-
-          {/* Subtle Open Live App link */}
+        {/* Monochrome Editorial Action Links */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
           <a
             href="https://itelect4-project-rho.vercel.app/"
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#52525B] dark:text-[#A1A1AA] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-medium text-cta-primary-text bg-ink hover:opacity-90 rounded-full px-6 py-3 transition-all group"
           >
-            <span>Open Live App</span>
-            <ExternalLink size={12} />
+            <span>Visit Live Application</span>
+            <ArrowUpRight
+              size={15}
+              className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+            />
+          </a>
+
+          <a
+            href="https://github.com/EndayaRK/itelect4-project"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-ink border border-black/15 dark:border-white/15 hover:border-ink dark:hover:border-white rounded-full px-5 py-3 transition-colors group"
+          >
+            <Github size={14} />
+            <span>GitHub Repository</span>
+            <ArrowUpRight
+              size={14}
+              className="opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+            />
           </a>
         </div>
+      </div>
 
-        {/* ── Simulated Browser Viewport Canvas ── */}
+      {/* ── 2. Full-Width Desktop Application Stage ── */}
+      <div
+        data-project-preview
+        data-lenis-prevent
+        className="rounded-2xl border border-black/10 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#141416] shadow-[0_24px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_28px_70px_-15px_rgba(0,0,0,0.55)] overflow-hidden w-full flex flex-col transition-colors duration-300"
+      >
+        {/* Minimal Monochrome Application Frame Bar */}
+        <div className="px-4 sm:px-6 py-3 bg-[#F6F5F2] dark:bg-[#18181C] border-b border-black/8 dark:border-white/8 flex items-center justify-between gap-4 select-none font-mono text-[11px] text-muted">
+          <div className="flex items-center gap-3 truncate">
+            <span className="uppercase tracking-[0.16em] text-ink font-medium">
+              Interactive Desktop Preview
+            </span>
+            <span className="opacity-30 hidden sm:inline">/</span>
+            <span className="hidden sm:inline truncate">
+              View: <strong className="text-ink font-medium capitalize">{activeTab}</strong>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0">
+            <button
+              type="button"
+              onClick={handleRefresh}
+              aria-label="Refresh simulator"
+              className="inline-flex items-center gap-1.5 hover:text-ink transition-colors cursor-pointer"
+            >
+              <RotateCw
+                size={12}
+                className={isRefreshing ? "animate-spin text-ink" : ""}
+              />
+              <span>Refresh</span>
+            </button>
+
+            <a
+              href="https://itelect4-project-rho.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 hover:text-ink transition-colors"
+            >
+              <span>Open Live</span>
+              <ExternalLink size={11} />
+            </a>
+          </div>
+        </div>
+
+        {/* ── Simulated Application Viewport Canvas ── */}
         <div
           className={`flex flex-col min-h-[580px] p-4 sm:p-6 transition-colors duration-200 relative ${
             simulatorTheme === "dark"
@@ -944,93 +974,30 @@ export default function EventPulseSimulator({
         </div>
       </div>
 
-      {/* ── 3. PROJECT SHOWCASE METADATA PANEL (PORTFOLIO INTEGRATION) ── */}
-      <div className="mt-8 pt-8 border-t border-black/5 dark:border-white/5 grid lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-8 space-y-4">
-          <div className="inline-flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md border border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-              FULL-STACK CAMPUS MANAGEMENT SYSTEM
-            </span>
-            <span className="text-xs font-mono text-muted">
-              Live Production
-            </span>
+      {/* ── 3. Editorial Case Study Breakdown ── */}
+      <div
+        data-project-copy
+        className="pt-8 border-t border-black/10 dark:border-white/10 grid lg:grid-cols-12 gap-10 lg:gap-12 items-start"
+      >
+        {/* Left Column: Overview & Typographic Stack */}
+        <div className="lg:col-span-5 space-y-8">
+          <div className="space-y-3">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Overview
+            </p>
+            <p className="font-body text-sm sm:text-[15px] leading-[1.75] text-muted">
+              Developed and deployed a full-stack campus event platform for university
+              communities. Supports role-based permissions for Students, Organizers, and
+              Administrators, live capacity tracking, interactive event registration, and an
+              administrative operations view.
+            </p>
           </div>
 
-          <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-            EventPulse — Real-Time Campus Event Operations &amp; Member Directory
-          </h3>
-
-          <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-            Role: Full-Stack Architect &amp; Developer
-          </p>
-
-          <p className="text-sm sm:text-base leading-relaxed text-muted">
-            Architected and deployed a full-stack event tracking platform for
-            university communities. Features role-based access control (Student,
-            Organizer, Admin), capacity tracking, interactive event registration,
-            and an administrative metrics dashboard.
-          </p>
-
-          {/* Key Technical Contributions */}
-          <div className="space-y-2 pt-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-ink">
-              Key Technical Architecture
+          <div className="pt-6 border-t border-black/8 dark:border-white/8 space-y-2.5">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Technology Stack
             </p>
-            <ul className="space-y-2 text-xs sm:text-sm text-muted">
-              <li className="flex items-start gap-2.5">
-                <span className="text-indigo-600 dark:text-indigo-400 font-bold select-none mt-0.5">
-                  1.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Role-Based Authentication &amp; Access Control:</strong>{" "}
-                  Architected JWT session flows separating Students, Event
-                  Organizers, and System Administrators with type-safe route
-                  protection and Zod boundary validation.
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-indigo-600 dark:text-indigo-400 font-bold select-none mt-0.5">
-                  2.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Atomic Capacity &amp; Registration Engine:</strong> Real-time
-                  attendee registration with decrementing remaining thresholds,
-                  waitlists, and live status state machines (
-                  <code className="text-[11px] font-mono px-1 py-0.5 rounded bg-surface-strong">
-                    open
-                  </code>
-                  ,{" "}
-                  <code className="text-[11px] font-mono px-1 py-0.5 rounded bg-surface-strong">
-                    ongoing
-                  </code>
-                  ,{" "}
-                  <code className="text-[11px] font-mono px-1 py-0.5 rounded bg-surface-strong">
-                    closed
-                  </code>
-                  ).
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-indigo-600 dark:text-indigo-400 font-bold select-none mt-0.5">
-                  3.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Multi-Tenant Operations Dashboard:</strong> Administrative hub
-                  tracking campus-wide events, venue capacities, member rosters,
-                  and automated event readiness scoring.
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Stack Badges & External CTAs */}
-        <div className="lg:col-span-4 flex flex-col justify-between space-y-6 lg:border-l lg:border-black/5 dark:lg:border-white/5 lg:pl-8">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted mb-2.5">
-              Technologies Used
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+            <p className="font-mono text-xs sm:text-[13px] text-ink/90 leading-relaxed tracking-tight">
               {[
                 "React",
                 "TypeScript",
@@ -1040,50 +1007,70 @@ export default function EventPulseSimulator({
                 "MongoDB",
                 "JWT Authentication",
                 "Vercel",
-              ].map((tech) => (
-                <span
-                  key={tech}
-                  className="text-xs font-medium text-ink bg-surface-strong border border-black/5 dark:border-white/10 rounded-md px-3 py-1 shadow-xs"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <a
-              href="https://itelect4-project-rho.vercel.app/"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-full px-6 py-3 transition-all shadow-md group"
-            >
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span>Visit Live App</span>
-              <ArrowUpRight
-                size={14}
-                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-              />
-            </a>
-
-            <a
-              href="https://github.com/EndayaRK/itelect4-project"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong rounded-full px-5 py-3 transition-colors shadow-xs"
-            >
-              <Github size={14} />
-              <span>View GitHub Repo</span>
-              <ArrowUpRight size={13} />
-            </a>
-
-            <div className="text-center text-[11px] text-muted font-mono flex items-center justify-center gap-1.5 pt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Production Deployment Active</span>
-            </div>
+              ].join("   ·   ")}
+            </p>
           </div>
         </div>
+
+        {/* Right Column: Role & Technical Contributions */}
+        <div className="lg:col-span-7 lg:border-l lg:border-black/10 dark:lg:border-white/10 lg:pl-12 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
+            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Role &amp; Contributions
+            </span>
+            <span className="font-display text-sm font-semibold text-ink">
+              Full-Stack Developer
+            </span>
+          </div>
+
+          <dl className="space-y-4 text-sm">
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">01</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Role-Based Authentication &amp; Access Control:
+                </strong>{" "}
+                Implemented JWT session authentication separating Student, Event Organizer,
+                and System Administrator permissions across protected views.
+              </dd>
+            </div>
+
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">02</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Event Capacity &amp; Registration Workflow:
+                </strong>{" "}
+                Built attendee registration with real-time remaining slot updates and event
+                status transitions (
+                <code className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-ink">
+                  open
+                </code>
+                ,{" "}
+                <code className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-ink">
+                  ongoing
+                </code>
+                ,{" "}
+                <code className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-ink">
+                  closed
+                </code>
+                ).
+              </dd>
+            </div>
+
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">03</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Campus Operations &amp; Member Directory:
+                </strong>{" "}
+                Developed the administrative dashboard for monitoring campus-wide events,
+                venue utilization, and registered student directories.
+              </dd>
+            </div>
+          </dl>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

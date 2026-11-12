@@ -30,6 +30,10 @@ export default {
         "cta-secondary":      "rgb(var(--c-secondary-cta) / <alpha-value>)",
         "cta-secondary-text": "rgb(var(--c-secondary-cta-text) / <alpha-value>)",
 
+        /* ── Editorial plane & restrained accent ── */
+        plane:  "rgb(var(--c-plane) / <alpha-value>)",
+        accent: "rgb(var(--c-accent) / <alpha-value>)",
+
         /* ── Overlay ── */
         overlay: "rgb(var(--c-overlay) / <alpha-value>)",
 
@@ -51,9 +55,15 @@ export default {
         display: ["'Plus Jakarta Sans'", "'Inter'", "system-ui", "sans-serif"],
         body:    ["'Plus Jakarta Sans'", "'Inter'", "system-ui", "sans-serif"],
         mono:    ["'JetBrains Mono'", "'Fira Code'", "monospace"],
+        /* Editorial serif — used sparingly for display contrast only */
+        serif:   ["'Instrument Serif'", "Georgia", "'Times New Roman'", "serif"],
       },
       maxWidth: {
         site: "76rem",
+      },
+      letterSpacing: {
+        tightest: "-0.045em",
+        "widest-editorial": "0.22em",
       },
     },
   },

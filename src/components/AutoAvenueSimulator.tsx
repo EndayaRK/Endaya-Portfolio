@@ -3,15 +3,12 @@ import {
   AlertTriangle,
   ArrowUpRight,
   CheckCircle2,
-  ExternalLink,
   FileCheck,
   FileText,
   Github,
-  Lock,
   Plus,
   RefreshCw,
   Search,
-  Sparkles,
   TrendingUp,
   Wrench,
   X,
@@ -278,72 +275,90 @@ export default function AutoAvenueSimulator({
     );
   }, [products, productSearch]);
 
-  const activeTabSlug = activeTab.toLowerCase().replace(/\s+/g, "-");
-
   return (
-    <div
+    <article
       id="auto-avenue"
-      className={`w-full rounded-2xl border transition-all duration-300 p-6 sm:p-8 lg:p-10 backdrop-blur-md ${
-        isHighlighted
-          ? "border-ink shadow-[0_12px_36px_-6px_rgb(0_0_0/0.12)] dark:shadow-[0_12px_36px_-6px_rgb(0_0_0/0.6)] ring-2 ring-ink bg-white/90 dark:bg-[#16161A]/95"
-          : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-black/20 dark:hover:border-white/20"
+      className={`w-full space-y-10 lg:space-y-12 transition-opacity duration-300 ${
+        isHighlighted ? "ring-1 ring-ink/30 rounded-2xl p-2 sm:p-4" : ""
       }`}
     >
-      {/* ── Top Banner Tag (Portfolio Showcase Header) ── */}
-      <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/5 dark:border-white/5">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#144A2A] text-white font-bold tracking-wide shadow-xs">
-            <Sparkles size={11} />
-            ★ FEATURED ENTERPRISE ERP SYSTEM
-          </span>
-          <span className="text-muted/40">·</span>
-          <span className="font-mono text-muted">v2.4 Production</span>
-          <span className="text-muted/40">·</span>
-          <span className="text-muted">Automotive Dealership Network</span>
+      {/* ── 1. Editorial Case Study Header ── */}
+      <div
+        data-project-copy
+        className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-black/10 dark:border-white/10"
+      >
+        <div className="space-y-3 max-w-2xl">
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            <span className="text-ink font-semibold">03</span>
+            <span className="opacity-30">/</span>
+            <span>Inventory &amp; Database System</span>
+            <span className="opacity-30">·</span>
+            <span>Automotive Parts</span>
+          </div>
+
+          <h3 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-semibold text-ink tracking-[-0.03em] leading-[1.06]">
+            Auto Avenue IMS
+          </h3>
+
+          <p className="font-display text-lg sm:text-xl font-medium text-ink/85 tracking-[-0.015em] leading-[1.35]">
+            Automotive parts inventory and procurement management system.
+          </p>
         </div>
-        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Interactive Desktop Sandbox
-        </span>
+
+        {/* Monochrome Editorial Action Links */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <a
+            href="https://github.com/EndayaRK/auto-avenue-ims"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-medium text-cta-primary-text bg-ink hover:opacity-90 rounded-full px-6 py-3 transition-all group"
+          >
+            <Github size={14} />
+            <span>GitHub Repository</span>
+            <ArrowUpRight
+              size={15}
+              className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+            />
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setShowCaseStudyModal(true)}
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-ink border border-black/15 dark:border-white/15 hover:border-ink dark:hover:border-white rounded-full px-5 py-3 transition-colors cursor-pointer group"
+          >
+            <FileText size={14} />
+            <span>Architecture Notes</span>
+          </button>
+        </div>
       </div>
 
-      {/* ── Desktop Browser Sandbox Container ── */}
-      <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#141416] shadow-2xl overflow-hidden w-full max-w-4xl mx-auto flex flex-col transition-colors duration-300">
-        {/* ── Browser Header Chrome ── */}
-        <div className="px-4 py-3 bg-[#F4F4F6] dark:bg-[#1C1C20] border-b border-black/10 dark:border-white/10 flex items-center justify-between gap-3 select-none">
-          {/* Traffic light dots */}
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/40 inline-block shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/40 inline-block shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/40 inline-block shadow-inner" />
+      {/* ── 2. Full-Width Desktop Application Stage ── */}
+      <div
+        data-project-preview
+        data-lenis-prevent
+        className="rounded-2xl border border-black/10 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#141416] shadow-[0_24px_60px_-15px_rgba(0,0,0,0.18)] dark:shadow-[0_28px_70px_-15px_rgba(0,0,0,0.55)] overflow-hidden w-full flex flex-col transition-colors duration-300"
+      >
+        {/* Minimal Monochrome Application Frame Bar */}
+        <div className="px-4 sm:px-6 py-3 bg-[#F6F5F2] dark:bg-[#18181C] border-b border-black/8 dark:border-white/8 flex items-center justify-between gap-4 select-none font-mono text-[11px] text-muted">
+          <div className="flex items-center gap-3 truncate">
+            <span className="uppercase tracking-[0.16em] text-ink font-medium">
+              Interactive System Preview
+            </span>
+            <span className="opacity-30 hidden sm:inline">/</span>
+            <span className="hidden sm:inline truncate">
+              Module: <strong className="text-ink font-medium">{activeTab}</strong>
+            </span>
           </div>
 
-          {/* URL Address Bar */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/[0.05] dark:bg-white/[0.07] border border-black/[0.08] dark:border-white/[0.1] text-xs font-mono text-[#52525B] dark:text-[#A1A1AA] flex-1 max-w-md mx-auto justify-between shadow-inner">
-            <div className="flex items-center gap-2 truncate">
-              <Lock size={12} className="text-emerald-600 shrink-0" />
-              <span className="truncate">
-                https://autoavenue-ims.internal.net/
-                <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                  {activeTabSlug}
-                </span>
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => triggerToast("IMS database cache refreshed.")}
-              aria-label="Refresh simulator"
-              className="hover:text-ink transition-colors shrink-0"
-            >
-              <RefreshCw size={12} />
-            </button>
-          </div>
-
-          {/* Subtitle / Demo Link */}
-          <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#52525B] dark:text-[#A1A1AA]">
-            <span>Admin Portal</span>
-            <ExternalLink size={12} />
-          </span>
+          <button
+            type="button"
+            onClick={() => triggerToast("IMS inventory state refreshed.")}
+            aria-label="Refresh simulator"
+            className="inline-flex items-center gap-1.5 hover:text-ink transition-colors shrink-0 cursor-pointer"
+          >
+            <RefreshCw size={12} />
+            <span>Refresh</span>
+          </button>
         </div>
 
         {/* ── App Header: Deep Forest Green (#144A2A) ── */}
@@ -851,192 +866,154 @@ export default function AutoAvenueSimulator({
         </div>
       </div>
 
-      {/* ── 5. PROJECT METADATA PANEL (PORTFOLIO INTEGRATION) ── */}
-      <div className="mt-8 pt-8 border-t border-black/5 dark:border-white/5 grid lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-8 space-y-4">
-          <div className="inline-flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md border border-[#144A2A]/30 bg-[#144A2A]/10 text-[#144A2A] dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              ENTERPRISE AUTOMOTIVE ERP &amp; INVENTORY MANAGEMENT
-            </span>
-            <span className="text-xs font-mono text-muted">Production System</span>
+      {/* ── 3. Editorial Case Study Breakdown ── */}
+      <div
+        data-project-copy
+        className="pt-8 border-t border-black/10 dark:border-white/10 grid lg:grid-cols-12 gap-10 lg:gap-12 items-start"
+      >
+        {/* Left Column: Overview & Typographic Stack */}
+        <div className="lg:col-span-5 space-y-8">
+          <div className="space-y-3">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Overview
+            </p>
+            <p className="font-body text-sm sm:text-[15px] leading-[1.75] text-muted">
+              Developed an inventory and procurement management system for automotive parts
+              operations. Centralizes part catalogs, minimum stock level alerts, supplier
+              purchase order workflows, and recorded sales transactions in a structured web
+              interface.
+            </p>
           </div>
 
-          <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-            Auto Avenue IMS — Stock Level Optimization &amp; Procurement Workflow
-          </h3>
-
-          <p className="text-xs font-semibold text-[#144A2A] dark:text-emerald-400 uppercase tracking-wider">
-            Role: Backend &amp; Database Developer
-          </p>
-
-          <p className="text-sm sm:text-base leading-relaxed text-muted">
-            Designed an inventory management system for automotive parts
-            dealerships. Implemented real-time low-stock threshold triggers,
-            automated purchase order generation for verified part suppliers, and
-            end-to-end sales ledger tracking.
-          </p>
-
-          {/* Key Technical Contributions */}
-          <div className="space-y-2 pt-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-ink">
-              Key Technical Architecture
+          <div className="pt-6 border-t border-black/8 dark:border-white/8 space-y-2.5">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Technology Stack
             </p>
-            <ul className="space-y-2 text-xs sm:text-sm text-muted">
-              <li className="flex items-start gap-2.5">
-                <span className="text-[#144A2A] dark:text-emerald-400 font-bold select-none mt-0.5">
-                  1.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Automated Procurement &amp; Reorder Thresholds:</strong>{" "}
-                  Engineered automated stock level triggers that identify critical
-                  part depletion and dispatch purchase order requisitions to
-                  verified suppliers.
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-[#144A2A] dark:text-emerald-400 font-bold select-none mt-0.5">
-                  2.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Role-Based Dealership Permissions:</strong> Enforced
-                  granular authentication separating warehouse handlers, inventory
-                  controllers, and department managers across dealership facilities.
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-[#144A2A] dark:text-emerald-400 font-bold select-none mt-0.5">
-                  3.
-                </span>
-                <span className="leading-relaxed">
-                  <strong>Audit-Ready Transaction Ledger &amp; Reporting:</strong>{" "}
-                  Structured relational database schemas (MySQL / PostgreSQL) for
-                  exact stock movement reconciliation and exportable sales audit
-                  reports.
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Stack Badges & External CTAs */}
-        <div className="lg:col-span-4 flex flex-col justify-between space-y-6 lg:border-l lg:border-black/5 dark:lg:border-white/5 lg:pl-8">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted mb-2.5">
-              Technologies Used
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+            <p className="font-mono text-xs sm:text-[13px] text-ink/90 leading-relaxed tracking-tight">
               {[
                 "React",
                 "TypeScript",
                 "Node.js",
-                "Express",
+                "Express.js",
                 "MySQL / PostgreSQL",
                 "Tailwind CSS",
-              ].map((tech) => (
-                <span
-                  key={tech}
-                  className="text-xs font-medium text-ink bg-surface-strong border border-black/5 dark:border-white/10 rounded-md px-3 py-1 shadow-xs"
-                >
-                  {tech}
-                </span>
-              ))}
+              ].join("   ·   ")}
+            </p>
+          </div>
+        </div>
+
+        {/* Right Column: Role & Technical Contributions */}
+        <div className="lg:col-span-7 lg:border-l lg:border-black/10 dark:lg:border-white/10 lg:pl-12 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
+            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Role &amp; Contributions
+            </span>
+            <span className="font-display text-sm font-semibold text-ink">
+              Backend &amp; Database Developer
+            </span>
+          </div>
+
+          <dl className="space-y-4 text-sm">
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">01</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Low-Stock Thresholds &amp; Reorder Workflow:
+                </strong>{" "}
+                Implemented stock threshold checks that flag depleted automotive parts and
+                generate purchase order requisitions for linked suppliers.
+              </dd>
             </div>
-          </div>
 
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setShowCaseStudyModal(true)}
-              className="w-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-white bg-[#144A2A] hover:bg-[#1a5b34] rounded-full px-6 py-3 transition-all shadow-md group cursor-pointer"
-            >
-              <FileText size={14} />
-              <span>View Case Study</span>
-              <ArrowUpRight
-                size={14}
-                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-              />
-            </button>
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">02</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Role-Based Inventory &amp; Procurement Views:
+                </strong>{" "}
+                Structured permissions and workflows separating catalog tracking, supplier
+                order receiving, and point-of-sale part deductions.
+              </dd>
+            </div>
 
-            <a
-              href="https://github.com/EndayaRK/auto-avenue-ims"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-ink bg-white/80 dark:bg-[#18181C]/80 border border-black/5 dark:border-white/10 hover:bg-surface-strong rounded-full px-5 py-3 transition-colors shadow-xs"
-            >
-              <Github size={14} />
-              <span>View GitHub Repo</span>
-              <ArrowUpRight size={13} />
-            </a>
-
-            
-          </div>
+            <div className="grid grid-cols-[28px_1fr] gap-3 items-baseline">
+              <dt className="font-mono text-[11px] text-muted">03</dt>
+              <dd className="text-muted leading-[1.68]">
+                <strong className="text-ink font-medium">
+                  Relational Database Schema &amp; Sales Ledger:
+                </strong>{" "}
+                Designed normalized SQL tables (`MySQL / PostgreSQL`) for parts inventory,
+                supplier records, purchase orders, and transaction history.
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
 
-      {/* ── Case Study Modal ── */}
+      {/* ── Architecture Notes Modal (Factual & Monochrome) ── */}
       {showCaseStudyModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#18181D] border border-black/10 dark:border-white/10 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+          <div className="bg-white dark:bg-[#141416] border border-black/10 dark:border-white/10 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-5">
             <button
               type="button"
               onClick={() => setShowCaseStudyModal(false)}
-              className="absolute top-4 right-4 text-muted hover:text-ink p-1 rounded-lg cursor-pointer"
+              className="absolute top-5 right-5 text-muted hover:text-ink p-1 rounded-lg cursor-pointer"
+              aria-label="Close modal"
             >
               <X size={16} />
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#144A2A]/10 text-[#144A2A] dark:text-emerald-400 border border-[#144A2A]/20">
-                CASE STUDY
-              </span>
-              <span className="text-xs font-semibold text-muted">
-                Enterprise Inventory Optimization
-              </span>
+            <div className="space-y-1.5">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                03 / Architecture Notes
+              </p>
+              <h3 className="font-display text-xl font-semibold text-ink tracking-tight">
+                Auto Avenue IMS — System Design
+              </h3>
             </div>
 
-            <h3 className="font-display text-xl font-bold text-ink">
-              Auto Avenue IMS Engineering Architecture
-            </h3>
-
-            <p className="text-xs text-muted leading-relaxed">
-              Auto Avenue required an internal system to resolve part stockouts
-              and supplier reconciliation delays. We replaced fragmented manual
-              spreadsheets with a unified relational inventory and procurement engine.
+            <p className="text-sm text-muted leading-relaxed">
+              Auto Avenue IMS was built to replace manual spreadsheet tracking for automotive
+              parts inventory, supplier purchase orders, and sales logging with a structured
+              relational database application.
             </p>
 
-            <div className="space-y-2 text-xs pt-2 border-t border-black/5 dark:border-white/5">
-              <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 space-y-1">
-                <span className="font-bold text-ink">Problem Solved:</span>
-                <p className="text-muted text-[11px]">
-                  Manual part tracking caused up to 18 hours of weekly inventory
-                  audits and critical component stockouts during vehicle servicing.
+            <div className="space-y-3 text-xs pt-3 border-t border-black/10 dark:border-white/10">
+              <div className="p-4 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/8 dark:border-white/8 space-y-1.5">
+                <span className="font-mono text-[11px] uppercase tracking-wider font-semibold text-ink">
+                  Data Model &amp; Inventory Integrity
+                </span>
+                <p className="text-muted text-xs leading-relaxed">
+                  Each part record tracks current stock against a minimum threshold level and
+                  links directly to supplier records so purchase orders can be drafted and
+                  received into stock without manual recalculation.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                  Business Impact:
+              <div className="p-4 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/8 dark:border-white/8 space-y-1.5">
+                <span className="font-mono text-[11px] uppercase tracking-wider font-semibold text-ink">
+                  Procurement &amp; Sales Reconciliation
                 </span>
-                <p className="text-muted text-[11px]">
-                  Automated reorder thresholds reduced inventory discrepancies by
-                  85% and slashed manual requisition approval time from 2 days to under
-                  15 minutes.
+                <p className="text-muted text-xs leading-relaxed">
+                  Receiving a purchase order increments the corresponding part stock, while
+                  recording a sale deducts units and appends an entry to the transaction
+                  ledger.
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-black/5 dark:border-white/5">
+            <div className="flex justify-end pt-3 border-t border-black/10 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => setShowCaseStudyModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#144A2A] hover:bg-[#1a5b34] text-white text-xs font-semibold transition-colors cursor-pointer"
+                className="px-5 py-2.5 rounded-full bg-ink text-cta-primary-text text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer"
               >
-                Done
+                Close
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </article>
   );
 }
