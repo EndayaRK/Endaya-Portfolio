@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
-import { Filter } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ProjectShowcaseStage from "./ProjectShowcaseStage";
 import type { ProjectStageItem } from "./ProjectShowcaseStage";
 import PalengkeHubSimulator from "./PalengkeHubSimulator";
 import EventPulseSimulator from "./EventPulseSimulator";
 import AutoAvenueSimulator from "./AutoAvenueSimulator";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type ProjectsProps = {
   highlightedProjectId?: string | null;
@@ -12,21 +15,21 @@ type ProjectsProps = {
 
 export default function Projects({ highlightedProjectId }: ProjectsProps) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const sectionRef = useRef<HTMLElement>(null);
 
   const categories = ["All", "Mobile & Capstone", "Full-Stack", "Database & Web"];
 
-  // Define the 3 interactive flagship projects for the stage
+  // Define the 3 interactive flagship projects for the editorial stage
   const stageProjects: ProjectStageItem[] = useMemo(
     () => [
       {
         id: "palengkehub",
         number: "01",
         title: "PalengkeHub",
-        subtitle: "Mobile App",
+        subtitle: "Mobile Marketplace",
         category: "Mobile & Capstone",
-        domain: "Public Market Platform & Presyo Check",
+        domain: "Digital Marketplace & Price-Comparison Platform",
         tagline: "Lipa City Public Market",
-        accentColor: "#D95B16",
         stack: [
           "React",
           "TypeScript",
@@ -34,7 +37,6 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
           "Node.js",
           "Express.js",
           "REST API",
-          "Mobile UI",
         ],
         render: (isHighlighted) => (
           <PalengkeHubSimulator isHighlighted={isHighlighted} />
@@ -44,11 +46,10 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         id: "event-tracker",
         number: "02",
         title: "EventPulse",
-        subtitle: "Campus Web",
+        subtitle: "Campus Web Platform",
         category: "Full-Stack",
-        domain: "Campus Operations & Live Event Tracker",
-        tagline: "Academic, Sports & Career Hub",
-        accentColor: "#6366F1",
+        domain: "Campus Event Management & Registration System",
+        tagline: "Full-Stack Web Application",
         stack: [
           "React",
           "TypeScript",
@@ -67,18 +68,16 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
         id: "auto-avenue",
         number: "03",
         title: "Auto Avenue IMS",
-        subtitle: "Enterprise ERP",
+        subtitle: "Inventory & Procurement",
         category: "Database & Web",
-        domain: "Automotive Inventory & Procurement Engine",
-        tagline: "Stock Optimization & Procurement Workflow",
-        accentColor: "#144A2A",
+        domain: "Automotive Parts Inventory & Procurement System",
+        tagline: "Backend & Relational Database System",
         stack: [
           "React",
           "TypeScript",
           "Node.js",
-          "Express",
+          "Express.js",
           "MySQL / PostgreSQL",
-          "SQL",
           "Tailwind CSS",
         ],
         render: (isHighlighted) => (
@@ -89,51 +88,171 @@ export default function Projects({ highlightedProjectId }: ProjectsProps) {
     []
   );
 
+  // Cinematic 4-Step GSAP Section Entrance Choreography
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      const headingMasks = section.querySelectorAll("[data-selected-work-mask]");
+      const indexBar = section.querySelector("[data-selected-work-index]");
+      const previewStage = section.querySelector("[data-project-preview]");
+      const copyBlocks = section.querySelectorAll("[data-project-copy]");
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 78%",
+          once: true,
+        },
+      });
+
+      // 1. Reveal Selected Work heading & intro through text-mask animation
+      if (headingMasks.length > 0) {
+        tl.fromTo(
+          headingMasks,
+          { yPercent: 108, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.82,
+            stagger: 0.08,
+            ease: "expo.out",
+            clearProps: "transform,opacity",
+          },
+          0
+        );
+      }
+
+      // 2. Introduce the editorial project navigation index
+      if (indexBar) {
+        tl.fromTo(
+          indexBar,
+          { y: 18, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.72,
+            ease: "expo.out",
+            clearProps: "transform,opacity",
+          },
+          0.16
+        );
+      }
+
+      // 3. Reveal the active project's preview container with refined scale/clip entrance
+      if (previewStage) {
+        tl.fromTo(
+          previewStage,
+          {
+            clipPath: "inset(6% 0% 6% 0% round 16px)",
+            scale: 0.975,
+            opacity: 0,
+          },
+          {
+            clipPath: "inset(0% 0% 0% 0% round 16px)",
+            scale: 1,
+            opacity: 1,
+            duration: 0.92,
+            ease: "expo.out",
+            clearProps: "clipPath,transform,opacity",
+          },
+          0.26
+        );
+      }
+
+      // 4. Bring project title, description, and contribution details into view in sequence
+      if (copyBlocks.length > 0) {
+        tl.fromTo(
+          copyBlocks,
+          { y: 22, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.78,
+            stagger: 0.09,
+            ease: "expo.out",
+            clearProps: "transform,opacity",
+          },
+          0.34
+        );
+      }
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="projects"
-      className="py-20 lg:py-28 border-b border-black/5 dark:border-white/5 bg-band-secondary/70 transition-colors duration-300"
+      className="py-24 lg:py-36 border-b border-black/8 dark:border-white/8 bg-band-secondary/60 transition-colors duration-300"
     >
-      <div className="max-w-site mx-auto px-6 md:px-10 relative z-10 space-y-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-black/5 dark:border-white/5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
-              Evidence of Production Ability
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-              Selected Work
-            </h2>
-            <p className="text-sm sm:text-base text-muted mt-2 max-w-xl leading-relaxed">
-              Full-stack applications and collaborative systems built from concept to production.
-              Operate each working simulator directly in the interactive project stage below.
-            </p>
+      <div className="max-w-site mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+        {/* ── Editorial Section Introduction ── */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-10 lg:pb-12">
+          <div className="max-w-2xl">
+            <div className="overflow-hidden mb-3">
+              <p
+                data-selected-work-mask
+                className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-muted"
+              >
+                SELECTED WORK
+              </p>
+            </div>
+
+            <div className="overflow-hidden">
+              <h2
+                data-selected-work-mask
+                className="font-display text-[clamp(2.25rem,4.5vw,3.75rem)] font-semibold text-ink tracking-[-0.03em] leading-[1.06]"
+              >
+                Selected Work
+              </h2>
+            </div>
+
+            <div className="overflow-hidden mt-4">
+              <p
+                data-selected-work-mask
+                className="font-body text-base sm:text-[17px] text-muted max-w-xl leading-[1.65]"
+              >
+                A selection of applications and systems I&apos;ve developed.
+              </p>
+            </div>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-muted flex items-center gap-1.5">
-              <Filter size={12} />
-              Domain:
-            </span>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`text-xs font-semibold rounded-full px-3.5 py-1.5 border transition-all cursor-pointer ${
-                  activeCategory === cat
-                    ? "border-ink bg-ink text-cta-primary-text shadow-sm"
-                    : "border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md text-muted hover:text-ink hover:border-black/20 dark:hover:border-white/20"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+          {/* Subtle Editorial Domain Filter */}
+          <div
+            data-selected-work-mask
+            className="flex flex-wrap items-center gap-1.5 sm:gap-2 self-start lg:self-end"
+            role="group"
+            aria-label="Filter projects by domain"
+          >
+            {categories.map((cat) => {
+              const isSelected = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`font-mono text-[11px] uppercase tracking-[0.12em] px-3.5 py-1.5 rounded-full border transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? "border-ink bg-ink text-cta-primary-text font-medium"
+                      : "border-black/10 dark:border-white/10 bg-transparent text-muted hover:text-ink hover:border-black/25 dark:hover:border-white/25"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* ── Paginated Project Deck Stage ── */}
+        {/* ── Editorial Project Index & Case-Study Stage ── */}
         <ProjectShowcaseStage
           projects={stageProjects}
           highlightedProjectId={highlightedProjectId}

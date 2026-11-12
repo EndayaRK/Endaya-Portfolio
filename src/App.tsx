@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import InitialPreloader from "./components/InitialPreloader";
 import Navigation from "./components/Navigation";
 import AmbientBackground from "./components/AmbientBackground";
@@ -80,43 +81,45 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-band-primary text-ink selection:bg-ink/10 selection:text-ink relative overflow-x-hidden">
-      {/* Premium Initial Loading Screen */}
-      <InitialPreloader />
+    <SmoothScrollProvider>
+      <div className="min-h-screen bg-band-primary text-ink selection:bg-ink/10 selection:text-ink relative overflow-x-hidden">
+        {/* Premium Initial Loading Screen */}
+        <InitialPreloader />
 
-      {/* Ambient Background with SVG Grid and Drifting Radial Blur Glows */}
-      <AmbientBackground />
+        {/* Ambient Background with SVG Grid and Drifting Radial Blur Glows */}
+        <AmbientBackground />
 
-      {/* Navigation with Integrated Compact Search */}
-      <Navigation onOpenAi={() => setIsAiChatOpen((prev) => !prev)} />
+        {/* Navigation with Integrated Compact Search */}
+        <Navigation onOpenAi={() => setIsAiChatOpen((prev) => !prev)} />
 
-      {/* Main Content with Alternating Section Bands */}
-      <main className="relative z-10">
-        <Hero />
-        <ProfessionalOverview />
-        <Projects
-          highlightedProjectId={
-            highlightedProjectIds && highlightedProjectIds.length > 0
-              ? highlightedProjectIds[0]
-              : null
-          }
+        {/* Main Content with Alternating Section Bands */}
+        <main className="relative z-10">
+          <Hero />
+          <ProfessionalOverview />
+          <Projects
+            highlightedProjectId={
+              highlightedProjectIds && highlightedProjectIds.length > 0
+                ? highlightedProjectIds[0]
+                : null
+            }
+          />
+          <TechnicalCompetencies onHoverGroup={(ids) => setHighlightedProjectIds(ids)} />
+          <Certificates />
+        </main>
+
+        {/* Footer / Contact */}
+        <div className="relative z-10">
+          <Footer onCopyEmail={copyEmail} emailCopied={emailCopied} />
+        </div>
+
+        <Toast message={toastMessage} visible={!!toastMessage} />
+
+        {/* ── Messenger-Style Floating AI Chat Widget ── */}
+        <AiChatWidget
+          isOpen={isAiChatOpen}
+          onOpenChange={setIsAiChatOpen}
         />
-        <TechnicalCompetencies onHoverGroup={(ids) => setHighlightedProjectIds(ids)} />
-        <Certificates />
-      </main>
-
-      {/* Footer / Contact */}
-      <div className="relative z-10">
-        <Footer onCopyEmail={copyEmail} emailCopied={emailCopied} />
       </div>
-
-      <Toast message={toastMessage} visible={!!toastMessage} />
-
-      {/* ── Messenger-Style Floating AI Chat Widget ── */}
-      <AiChatWidget
-        isOpen={isAiChatOpen}
-        onOpenChange={setIsAiChatOpen}
-      />
-    </div>
+    </SmoothScrollProvider>
   );
 }

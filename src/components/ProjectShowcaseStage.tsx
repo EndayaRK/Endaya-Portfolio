@@ -150,124 +150,139 @@ export default function ProjectShowcaseStage({
   const activeProject = projects[currentIndex];
 
   return (
-    <div ref={sectionRef} className="w-full space-y-6">
-      {/* ── 1. UNBOXED EDITORIAL PROJECT STRIP & ROCK-SOLID CONTROLS ── */}
-      <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10 select-none">
-        {/* Simple text links spaced naturally: 01 PalengkeHub · 02 EventPulse · 03 Auto Avenue */}
-        <nav
-          aria-label="Editorial project exhibition"
-          className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2"
-        >
-          {projects.map((proj, idx) => {
-            const isActive = idx === currentIndex;
-            return (
-              <React.Fragment key={proj.id}>
-                {idx > 0 && (
-                  <span
-                    className="text-black/20 dark:text-white/20 select-none hidden sm:inline"
-                    aria-hidden="true"
-                  >
-                    ·
-                  </span>
-                )}
+    <div ref={sectionRef} className="w-full">
+      {/* ── 1. EDITORIAL PROJECT INDEX BAR ── */}
+      <div
+        data-selected-work-index
+        className="w-full border-y border-black/10 dark:border-white/10 select-none"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-stretch justify-between">
+          {/* Numbered Project Chapters */}
+          <nav
+            aria-label="Selected work project index"
+            className="grid grid-cols-1 sm:grid-cols-3 flex-1 divide-y sm:divide-y-0 sm:divide-x divide-black/10 dark:divide-white/10"
+          >
+            {projects.map((proj, idx) => {
+              const isActive = idx === currentIndex;
+              const isDimmedByFilter =
+                activeCategory !== "All" && proj.category !== activeCategory;
+
+              return (
                 <button
+                  key={proj.id}
                   type="button"
                   onClick={() => handleGoToIndex(idx)}
                   aria-current={isActive ? "true" : undefined}
-                  className={`group inline-flex items-center gap-2 text-sm sm:text-base transition-opacity duration-200 cursor-pointer ${
+                  className={`group relative text-left px-4 sm:px-6 py-5 transition-colors duration-300 cursor-pointer focus-visible:outline-none ${
                     isActive
-                      ? "opacity-100 text-ink font-semibold"
-                      : "opacity-40 hover:opacity-80 text-ink font-normal"
-                  }`}
+                      ? "bg-black/[0.025] dark:bg-white/[0.03]"
+                      : "hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+                  } ${isDimmedByFilter && !isActive ? "opacity-40" : ""}`}
                 >
-                  <span className="font-mono text-xs text-muted">
-                    {proj.number}
-                  </span>
-                  <span className="tracking-tight">{proj.title}</span>
+                  <div className="flex items-baseline justify-between gap-3 mb-1.5">
+                    <span
+                      className={`font-mono text-[11px] tracking-[0.18em] uppercase transition-colors duration-300 ${
+                        isActive
+                          ? "text-ink font-semibold"
+                          : "text-muted group-hover:text-ink/80"
+                      }`}
+                    >
+                      {proj.number}
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted/75 truncate">
+                      {proj.subtitle}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`font-display text-lg sm:text-xl tracking-[-0.02em] transition-colors duration-300 ${
+                        isActive
+                          ? "text-ink font-semibold"
+                          : "text-ink/55 group-hover:text-ink/90 font-medium"
+                      }`}
+                    >
+                      {proj.title}
+                    </span>
+                  </div>
+
+                  {/* Animated Active Editorial Rule */}
                   {isActive && (
-                    <motion.span
-                      layoutId="editorialActiveDot"
-                      className="w-1.5 h-1.5 rounded-full bg-ink"
+                    <motion.div
+                      layoutId="selectedWorkActiveRule"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-ink"
                       transition={{
                         type: "spring",
-                        stiffness: 400,
-                        damping: 28,
+                        stiffness: 380,
+                        damping: 32,
                       }}
                     />
                   )}
                 </button>
-              </React.Fragment>
-            );
-          })}
-        </nav>
+              );
+            })}
+          </nav>
 
-        {/* Rock-solid Stepper Controls (Zero Layout Shift) */}
-        <div className="flex items-center gap-1 self-end sm:self-auto shrink-0">
-          {/* Chevron Left */}
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous Project"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-ink hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink"
-          >
-            <ChevronLeft size={16} strokeWidth={2} />
-          </button>
+          {/* Chapter Counter & Stepper Controls */}
+          <div className="flex items-center justify-between lg:justify-end gap-4 px-4 sm:px-6 py-3.5 lg:py-0 border-t lg:border-t-0 lg:border-l border-black/10 dark:border-white/10 shrink-0">
+            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted hidden xl:inline">
+              Case Study
+            </span>
 
-          {/* Fixed Index Counter */}
-          <div className="w-14 text-center font-mono tabular-nums text-xs tracking-widest select-none text-ink font-medium">
-            {currentIndex + 1} / {total}
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous Project"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-ink hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink"
+              >
+                <ChevronLeft size={15} strokeWidth={1.75} />
+              </button>
+
+              <div className="w-16 text-center font-mono tabular-nums text-xs tracking-[0.2em] select-none text-ink font-medium">
+                0{currentIndex + 1} / 0{total}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next Project"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-ink hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink"
+              >
+                <ChevronRight size={15} strokeWidth={1.75} />
+              </button>
+            </div>
           </div>
-
-          {/* Chevron Right */}
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next Project"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-ink hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink"
-          >
-            <ChevronRight size={16} strokeWidth={2} />
-          </button>
         </div>
       </div>
 
-      {/* Project Subtitle / Domain context (unboxed, clean typography) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-muted">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px] uppercase tracking-wider text-ink font-semibold">
-            {activeProject.category}
-          </span>
-          <span className="opacity-30">·</span>
-          <span>{activeProject.domain || activeProject.tagline}</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] opacity-60">
-          <span>Keyboard: [ ← / → ]</span>
-        </div>
-      </div>
-
-      {/* ── 2. ANCHORED LIVE INTERACTIVE SIMULATOR (100% PRESERVED) ── */}
-      <div className="relative w-full overflow-hidden pt-2">
+      {/* ── 2. EDITORIAL CASE STUDY & INTERACTIVE SIMULATOR STAGE ── */}
+      <div className="relative w-full pt-12 lg:pt-16">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
             key={activeProject.id}
             custom={direction}
             variants={{
               enter: (dir: number) => ({
-                x: dir > 0 ? 30 : -30,
+                y: 16,
+                x: dir > 0 ? 18 : -18,
                 opacity: 0,
               }),
               center: {
+                y: 0,
                 x: 0,
                 opacity: 1,
               },
               exit: (dir: number) => ({
-                x: dir > 0 ? -30 : 30,
+                y: -10,
+                x: dir > 0 ? -18 : 18,
                 opacity: 0,
               }),
             }}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
             className="w-full"
           >
             {activeProject.render(

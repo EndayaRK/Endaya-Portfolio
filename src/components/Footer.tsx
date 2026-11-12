@@ -1,166 +1,314 @@
-import { ArrowUp, ArrowUpRight, Check, Copy, Github, Linkedin, MapPin, Phone } from "lucide-react";
+import type { MouseEvent } from "react";
+import { ArrowUp, ArrowUpRight, Check, Copy } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { profile } from "../data";
+import { EASE_OUT_EXPO, scrollToSection } from "../motion";
 
 type FooterProps = {
   onCopyEmail: () => void;
   emailCopied: boolean;
 };
 
+const footerNavLinks = [
+  { label: "About", id: "overview" },
+  { label: "Work", id: "projects" },
+  { label: "Process", id: "skills" },
+  { label: "Credentials", id: "certificates" },
+];
+
 export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
+  const reduce = useReducedMotion() ?? false;
+
   function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function handleNavClick(e: MouseEvent<HTMLAnchorElement>, id: string) {
+    e.preventDefault();
+    scrollToSection(id);
   }
 
   return (
-    <footer id="contact" className="border-t border-black/5 dark:border-white/5 bg-band-secondary/70 backdrop-blur-[2px] transition-colors duration-300">
-      {/* Contact Section */}
-      <div className="max-w-site mx-auto px-6 md:px-10 py-20 lg:py-24 relative z-10">
+    <footer
+      id="contact"
+      aria-labelledby="contact-heading"
+      className="border-t border-black/8 dark:border-white/8 bg-band-secondary/70 transition-colors duration-300"
+    >
+      <div className="max-w-site mx-auto px-6 md:px-12 lg:px-16 pt-24 lg:pt-36 pb-12 lg:pb-16 relative z-10">
+        {/* ── 1. Editorial Closing Heading & Availability ── */}
         <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-4">
-            Get in Touch
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[1.12]">
-            Let's build something functional together.
-          </h2>
-          <p className="text-base sm:text-lg text-muted mt-4 leading-relaxed">
-            I am actively seeking an{" "}
-            <span className="text-ink font-medium">IT internship</span>{" "}
-            where I can contribute clean full-stack code, collaborate on production systems, and
-            continue learning from experienced engineers. Based in {profile.location}, open to both
-            on-site and remote opportunities.
-          </p>
+          <div className="overflow-hidden mb-4">
+            <motion.p
+              initial={reduce ? false : { y: "110%", opacity: 0 }}
+              whileInView={{ y: "0%", opacity: 1 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: reduce ? 0 : 0.72, ease: EASE_OUT_EXPO }}
+              className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-muted"
+            >
+              CONTACT
+            </motion.p>
+          </div>
+
+          {/* Heading reveal using a clipping mask */}
+          <div className="overflow-hidden pb-1">
+            <motion.h2
+              id="contact-heading"
+              initial={reduce ? false : { y: "108%" }}
+              whileInView={{ y: "0%" }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{
+                duration: reduce ? 0 : 0.88,
+                delay: reduce ? 0 : 0.06,
+                ease: EASE_OUT_EXPO,
+              }}
+              className="font-display text-[clamp(2.15rem,4.6vw,3.85rem)] font-semibold text-ink tracking-[-0.03em] leading-[1.08]"
+            >
+              Have a project or opportunity in mind?
+            </motion.h2>
+          </div>
+
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{
+              duration: reduce ? 0 : 0.78,
+              delay: reduce ? 0 : 0.16,
+              ease: EASE_OUT_EXPO,
+            }}
+            className="font-body text-base sm:text-[18px] text-muted mt-5 max-w-2xl leading-[1.68]"
+          >
+            I&apos;m currently open to{" "}
+            <span className="text-ink font-medium">
+              internship and OJT opportunities
+            </span>
+            , with flexibility for{" "}
+            <span className="text-ink font-medium">
+              remote or onsite arrangements
+            </span>
+            .
+          </motion.p>
         </div>
 
-        {/* Email Action Card */}
-        <div className="mt-10 p-6 sm:p-8 rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-          <div className="grid md:grid-cols-12 gap-6 items-center">
-            <div className="md:col-span-7">
-              <span className="text-xs font-semibold uppercase tracking-widest text-muted block mb-1">
-                Direct Contact Email
+        {/* ── 2. Primary Typographic Email Statement & Actions ── */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{
+            duration: reduce ? 0 : 0.82,
+            delay: reduce ? 0 : 0.24,
+            ease: EASE_OUT_EXPO,
+          }}
+          className="mt-14 lg:mt-20 pt-10 lg:pt-12 border-t border-black/10 dark:border-white/10 flex flex-col lg:flex-row lg:items-end justify-between gap-8"
+        >
+          <div className="space-y-3 min-w-0">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted block">
+              Direct Email
+            </span>
+
+            <a
+              href={`mailto:${profile.email}`}
+              className="group relative inline-block max-w-full font-display text-[clamp(1.35rem,3.4vw,2.85rem)] font-semibold text-ink tracking-[-0.025em] leading-[1.15] break-all sm:break-normal"
+            >
+              <span>{profile.email}</span>
+              <span
+                aria-hidden="true"
+                className="block h-[1.5px] w-full bg-ink/25 mt-1.5 relative overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-ink origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
               </span>
-              <p className="font-display text-xl sm:text-2xl font-bold text-ink break-all">
-                {profile.email}
-              </p>
-              <p className="text-xs text-muted mt-1">Typical response time: within 24 hours</p>
-            </div>
+            </a>
+          </div>
 
-            <div className="md:col-span-5 flex flex-wrap items-center gap-3 md:justify-end">
-              <button
-                type="button"
-                onClick={onCopyEmail}
-                className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-3 rounded-full bg-cta-primary text-cta-primary-text hover:opacity-85 transition-opacity shadow-sm"
-              >
-                {emailCopied ? (
-                  <>
-                    <Check size={15} strokeWidth={2.5} />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy size={15} />
-                    Copy Email
-                  </>
-                )}
-              </button>
+          {/* Two Functional Email Actions */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 shrink-0">
+            <button
+              type="button"
+              onClick={onCopyEmail}
+              className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-medium px-6 py-3 rounded-full bg-cta-primary text-cta-primary-text hover:opacity-90 active:scale-[0.99] transition-all cursor-pointer"
+            >
+              {emailCopied ? (
+                <>
+                  <Check size={15} strokeWidth={2.25} />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={14} />
+                  <span>Copy Email</span>
+                </>
+              )}
+            </button>
 
+            <a
+              href={`mailto:${profile.email}`}
+              className="group inline-flex items-center gap-2 text-xs sm:text-sm font-medium px-5 py-3 rounded-full border border-black/15 dark:border-white/15 text-ink hover:border-ink dark:hover:border-white transition-colors"
+            >
+              <span>Open Mail Client</span>
+              <ArrowUpRight
+                size={14}
+                className="opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+              />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* ── 3. Animated Editorial Divider & Secondary Contact Details ── */}
+        <div className="mt-14 lg:mt-16">
+          <motion.div
+            aria-hidden="true"
+            initial={reduce ? false : { scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{
+              duration: reduce ? 0 : 0.95,
+              delay: reduce ? 0 : 0.28,
+              ease: EASE_OUT_EXPO,
+            }}
+            className="h-px w-full bg-black/10 dark:bg-white/10 origin-left"
+          />
+
+          <div className="pt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 items-start">
+            {/* Understated Inline Social Links */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: reduce ? 0 : 0.7,
+                delay: reduce ? 0 : 0.34,
+                ease: EASE_OUT_EXPO,
+              }}
+              className="lg:col-span-5 space-y-2.5"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted block">
+                Profiles
+              </span>
+              <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group inline-flex items-center gap-1.5 font-display text-sm sm:text-base font-medium text-ink"
+                >
+                  <span className="relative">
+                    GitHub
+                    <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 group-hover:scale-x-100" />
+                  </span>
+                  <ArrowUpRight
+                    size={14}
+                    className="text-muted group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                  />
+                </a>
+
+                <a
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group inline-flex items-center gap-1.5 font-display text-sm sm:text-base font-medium text-ink"
+                >
+                  <span className="relative">
+                    LinkedIn
+                    <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 group-hover:scale-x-100" />
+                  </span>
+                  <ArrowUpRight
+                    size={14}
+                    className="text-muted group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                  />
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Secondary Phone Number */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: reduce ? 0 : 0.7,
+                delay: reduce ? 0 : 0.4,
+                ease: EASE_OUT_EXPO,
+              }}
+              className="lg:col-span-3 space-y-2.5"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted block">
+                Phone
+              </span>
               <a
-                href={`mailto:${profile.email}`}
-                className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-3 rounded-full border border-black/5 dark:border-white/10 bg-white/80 dark:bg-[#18181C]/80 text-ink hover:bg-surface-strong transition-colors"
+                href={`tel:${profile.phone.replace(/\s+/g, "")}`}
+                className="group inline-flex items-center gap-1.5 font-mono text-sm text-ink/85 hover:text-ink transition-colors"
               >
-                Open Mail Client
-                <ArrowUpRight size={14} />
+                <span className="relative">
+                  {profile.phone}
+                  <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 group-hover:scale-x-100" />
+                </span>
               </a>
-            </div>
+            </motion.div>
+
+            {/* Subtle Secondary Location */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: reduce ? 0 : 0.7,
+                delay: reduce ? 0 : 0.46,
+                ease: EASE_OUT_EXPO,
+              }}
+              className="lg:col-span-4 space-y-2.5"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted block">
+                Location
+              </span>
+              <p className="font-body text-sm text-muted">
+                {profile.location}
+              </p>
+            </motion.div>
           </div>
         </div>
 
-        {/* Contact Info Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {/* GitHub */}
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noreferrer"
-            className="p-4 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 hover:bg-surface-contrast transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none"
-          >
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-lg bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
-                <Github size={17} />
-              </span>
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted block">Version Control</span>
-                <span className="text-sm font-semibold text-ink">GitHub Profile</span>
-              </div>
-            </div>
-            <ArrowUpRight size={14} className="text-muted group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-
-          {/* LinkedIn */}
-          <a
-            href={profile.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="p-4 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 hover:bg-surface-contrast transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none"
-          >
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-lg bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
-                <Linkedin size={17} />
-              </span>
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted block">Professional Network</span>
-                <span className="text-sm font-semibold text-ink">LinkedIn Profile</span>
-              </div>
-            </div>
-            <ArrowUpRight size={14} className="text-muted group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-
-          {/* Phone */}
-          <a
-            href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-            className="p-4 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 hover:bg-surface-contrast transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none"
-          >
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-lg bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
-                <Phone size={17} />
-              </span>
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted block">Direct Phone</span>
-                <span className="text-sm font-semibold text-ink">{profile.phone}</span>
-              </div>
-            </div>
-            <ArrowUpRight size={14} className="text-muted group-hover:text-ink transition-colors" />
-          </a>
-
-          {/* Location */}
-          <div className="p-4 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#141416]/90 backdrop-blur-md flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-lg bg-surface-strong border border-black/5 dark:border-white/10 text-ink">
-                <MapPin size={17} />
-              </span>
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted block">Location</span>
-                <span className="text-sm font-semibold text-ink">Lipa City, Batangas</span>
-              </div>
-            </div>
-            <span className="text-[11px] font-bold text-muted border border-black/5 dark:border-white/10 px-1.5 py-0.5 rounded-md">
-              PH
+        {/* ── 4. Minimal Considered Footer Bar ── */}
+        <div className="mt-20 lg:mt-28 pt-8 border-t border-black/8 dark:border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-xs text-muted">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="font-mono text-[11px] text-ink font-medium">
+              © {new Date().getFullYear()} {profile.name}
             </span>
           </div>
-        </div>
 
-        {/* Footer Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted">
-          <span>© {new Date().getFullYear()} {profile.name}</span>
-          <div className="flex items-center gap-4">
-            
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <nav
+              aria-label="Footer navigation"
+              className="flex flex-wrap items-center gap-x-5 gap-y-1"
+            >
+              {footerNavLinks.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => handleNavClick(e, item.id)}
+                  className="hover:text-ink transition-colors"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+
+            <span
+              className="hidden sm:inline-block h-3 w-px bg-black/15 dark:bg-white/15"
+              aria-hidden="true"
+            />
+
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/5 dark:border-white/10 bg-white/80 dark:bg-[#18181C]/80 hover:bg-surface-strong hover:text-ink transition-colors"
               aria-label="Back to top"
+              className="group inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink hover:opacity-80 transition-opacity cursor-pointer"
             >
-              Back to Top
-              <ArrowUp size={12} />
+              <span>Back to top</span>
+              <ArrowUp
+                size={12}
+                className="group-hover:-translate-y-0.5 transition-transform"
+              />
             </button>
           </div>
         </div>
