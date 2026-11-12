@@ -101,6 +101,39 @@ body {
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* ─── Heavy Circular Wipe Theme Transition ─── */
+
+/* Freeze individual CSS transitions during snapshot capture & circular reveal
+   so the entire interface switches crisply across the moving circular boundary */
+html.theme-circular-wipe,
+html.theme-circular-wipe *,
+html.theme-circular-wipe *::before,
+html.theme-circular-wipe *::after {
+  transition: none !important;
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+  width: 100%;
+  object-fit: none;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+  will-change: clip-path;
+}
+
 ::selection {
   background-color: rgb(var(--c-text) / 0.10);
   color: rgb(var(--c-text));
