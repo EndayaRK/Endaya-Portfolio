@@ -141,6 +141,7 @@ export default function ProfessionalOverview() {
   const headingInnerRef = useRef<HTMLSpanElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const cardEntranceRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const reduceMotion = useReducedMotion() ?? false;
@@ -235,11 +236,20 @@ export default function ProfessionalOverview() {
       // 02 (Top-Right): from right & slightly up
       // 03 (Bottom-Left): from left & below
       // 04 (Bottom-Right): from right & below
+      //
+      // Horizontal travel is clamped to the real side gutter between the grid and the
+      // section edge, so entering cards never cross the section boundary and get cut off.
+      // Top-row cards enter from above (not below) so they never pass through the
+      // grid gap into the bottom row during the stagger.
+      const sectionWidth = sectionRef.current?.clientWidth ?? window.innerWidth;
+      const gridWidth = gridRef.current?.clientWidth ?? sectionWidth;
+      const gutter = Math.max(0, (sectionWidth - gridWidth) / 2 - 8);
+      const maxX = Math.min(52 * dist, gutter);
       const cardVectors = [
-        { x: -52 * dist, y: 26 * dist },
-        { x: 52 * dist, y: 26 * dist },
-        { x: -42 * dist, y: 54 * dist },
-        { x: 42 * dist, y: 54 * dist },
+        { x: -maxX, y: -18 * dist },
+        { x: maxX, y: -18 * dist },
+        { x: -maxX * 0.8, y: 54 * dist },
+        { x: maxX * 0.8, y: 54 * dist },
       ];
 
       cardEntranceRefs.current.forEach((cardEl, idx) => {
@@ -435,7 +445,10 @@ export default function ProfessionalOverview() {
         </div>
 
         {/* ───────────────────── Balanced 2×2 Editorial Grid ───────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7 items-stretch">
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7 items-stretch"
+        >
           {SKILL_CATEGORIES.map((category, idx) => {
             const isExpanded = expandedId === category.id;
             const isDimmed = expandedId !== null && !isExpanded;
@@ -490,13 +503,21 @@ export default function ProfessionalOverview() {
                   {/* ── Top Zone: Large Editorial Number, Kinetic Rule & Expand Control ── */}
                   <div className="relative z-10">
                     <div className="flex items-center justify-between gap-5">
-                      <span className="overflow-hidden block">
+                      {/* Mask keeps the reveal clip; hover scale lives on the mask itself
+                          (with glyph-safe padding) so the scaled number is never cut off. */}
+                      <span
+                        className={`overflow-hidden block py-[0.06em] -my-[0.06em] pr-1 origin-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                          isExpanded
+                            ? "scale-[1.04] translate-x-0.5"
+                            : "group-hover:scale-[1.04] group-hover:translate-x-0.5"
+                        }`}
+                      >
                         <span
                           data-card-number
-                          className={`block font-display text-5xl sm:text-6xl font-light tracking-tightest leading-none origin-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                          className={`block font-display text-5xl sm:text-6xl font-light tracking-tightest leading-none transition-colors duration-500 ${
                             isExpanded
-                              ? "text-ink scale-[1.04] translate-x-0.5"
-                              : "text-ink/25 dark:text-white/20 group-hover:text-ink dark:group-hover:text-white group-hover:scale-[1.04] group-hover:translate-x-0.5"
+                              ? "text-ink"
+                              : "text-ink/25 dark:text-white/20 group-hover:text-ink dark:group-hover:text-white"
                           }`}
                         >
                           {category.index}
@@ -553,11 +574,11 @@ export default function ProfessionalOverview() {
                     <div className="mt-7 sm:mt-8">
                       <h3
                         id={`skill-card-title-${category.id}`}
-                        className="overflow-hidden pb-[0.1em] -mb-[0.1em]"
+                        className="overflow-hidden pb-[0.1em] -mb-[0.1em] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
                       >
                         <span
                           data-card-title
-                          className="block font-display text-2xl sm:text-[1.75rem] lg:text-[1.95rem] font-bold tracking-tight text-ink leading-[1.14] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
+                          className="block font-display text-2xl sm:text-[1.75rem] lg:text-[1.95rem] font-bold tracking-tight text-ink leading-[1.14]"
                         >
                           {category.title}
                         </span>

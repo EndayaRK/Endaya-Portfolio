@@ -2,16 +2,36 @@ import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
+  ArrowRight,
   MessageSquare,
   RotateCcw,
   Send,
   Sparkles,
   X,
 } from "lucide-react";
+import {
+  INQUIRY_CONTINUE_TO_FORM_EVENT,
+  type CollaborationInquiry,
+  type InquiryTransferPayload,
+} from "../inquiry";
 
 export interface AiChatWidgetProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Optional collaboration inquiry handed off from the Contact section. */
+  pendingInquiry?: CollaborationInquiry | null;
+  /** Increments each time a new inquiry handoff is requested. */
+  inquiryRequestId?: number;
+}
+
+function buildInquiryOpeningMessage(inquiry: CollaborationInquiry): string {
+  const lines = ["I'd like help preparing a collaboration inquiry for Rhon."];
+  if (inquiry.categories.length > 0) {
+    lines.push(`Interested in: ${inquiry.categories.join(", ")}`);
+  }
+  const desc = inquiry.description.trim();
+  if (desc) lines.push(`My idea: ${desc}`);
+  return lines.join("\n");
 }
 
 interface ChatMessage {
@@ -48,6 +68,8 @@ const SUGGESTION_CHIPS = [
 export default function AiChatWidget({
   isOpen: controlledIsOpen,
   onOpenChange,
+  pendingInquiry = null,
+  inquiryRequestId = 0,
 }: AiChatWidgetProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
@@ -64,6 +86,13 @@ export default function AiChatWidget({
   const [inputVal, setInputVal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Active collaboration inquiry context: sent with every message while present,
+  // because /api/chat is stateless (single-turn) by design.
+  const [activeInquiry, setActiveInquiry] =
+    useState<CollaborationInquiry | null>(null);
+  const lastInquiryIdRef = useRef(0);
+  const inquiryStartMsgCountRef = useRef(0);
+  const lastPromptRef = useRef("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -102,10 +131,17 @@ export default function AiChatWidget({
     }
   }, [isOpen]);
 
-  // Send message to /api/chat
-  const handleSendMessage = async (userPrompt?: string) => {
-    const textToSend = (userPrompt || inputVal).trim();
-    if (!textToSend || isLoading) return;
+  // Send message to /api/chat (existing Gemini integration; key stays server-side)
+  const handleSendMessage = async (
+    userPrompt?: string,
+    options?: { inquiry?: CollaborationInquiry | null; force?: boolean }
+  ) => {
+    const textToSend = (userPrompt || inputVal || lastPromptRef.current).trim();
+    if (!textToSend || (isLoading && !options?.force)) return;
+    lastPromptRef.current = textToSend;
+
+    const inquiryForRequest =
+      options && "inquiry" in options ? options.inquiry : activeInquiry;
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -126,7 +162,18 @@ export default function AiChatWidget({
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: textToSend }),
+        body: JSON.stringify(
+          inquiryForRequest
+            ? {
+                message: textToSend,
+                context: {
+                  type: "collaboration",
+                  categories: inquiryForRequest.categories,
+                  description: inquiryForRequest.description,
+                },
+              }
+            : { message: textToSend }
+        ),
       });
 
       const data = await res.json().catch(() => null);
@@ -164,6 +211,46 @@ export default function AiChatWidget({
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // Collaboration inquiry handoff: start a context-aware conversation once per request
+  useEffect(() => {
+    if (
+      !pendingInquiry ||
+      !inquiryRequestId ||
+      inquiryRequestId === lastInquiryIdRef.current
+    ) {
+      return;
+    }
+    lastInquiryIdRef.current = inquiryRequestId;
+    inquiryStartMsgCountRef.current = messages.length;
+    setActiveInquiry(pendingInquiry);
+    handleSendMessage(buildInquiryOpeningMessage(pendingInquiry), {
+      inquiry: pendingInquiry,
+      force: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inquiryRequestId, pendingInquiry]);
+
+  const handleContinueToForm = () => {
+    // Include any follow-up clarifications the visitor typed during the AI session
+    const sessionMessages = messages.slice(inquiryStartMsgCountRef.current + 1);
+    const visitorFollowUps = sessionMessages
+      .filter((m) => m.sender === "user")
+      .map((m) => m.text.trim())
+      .filter(Boolean);
+
+    const baseDesc = activeInquiry?.description.trim() || "";
+    const combinedParts = [baseDesc, ...visitorFollowUps].filter(Boolean);
+    const refinedDescription =
+      visitorFollowUps.length > 0 ? combinedParts.join("\n\n") : undefined;
+
+    window.dispatchEvent(
+      new CustomEvent<InquiryTransferPayload>(INQUIRY_CONTINUE_TO_FORM_EVENT, {
+        detail: { refinedDescription },
+      })
+    );
+    setIsOpen(false);
   };
 
   return (
@@ -285,6 +372,39 @@ export default function AiChatWidget({
 
               <div ref={messagesEndRef} />
             </div>
+
+            {/* ── Collaboration Inquiry Context Bar (only while an inquiry is active) ── */}
+            {activeInquiry && (
+              <div className="px-3.5 py-2.5 bg-[#FAF9F6] dark:bg-[#18181C] border-t border-black/5 dark:border-white/5 shrink-0">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 text-[10px] leading-snug text-muted">
+                    <span className="font-mono uppercase tracking-[0.14em] text-ink/70">
+                      Inquiry
+                    </span>{" "}
+                    <span className="truncate">
+                      {activeInquiry.categories.length > 0
+                        ? activeInquiry.categories.join(" · ")
+                        : "Project idea"}
+                    </span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveInquiry(null)}
+                    className="shrink-0 text-[10px] text-muted hover:text-ink underline underline-offset-2 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleContinueToForm}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-black/15 dark:border-white/15 px-3 py-1.5 text-[11px] font-semibold text-ink hover:border-ink dark:hover:border-white transition-colors cursor-pointer"
+                >
+                  Continue to message form
+                  <ArrowRight size={12} />
+                </button>
+              </div>
+            )}
 
             {/* ── Quick Suggestion Chips (Tappable Pills) ── */}
             <div className="px-3 pt-2 pb-1.5 bg-[#FAF9F6] dark:bg-[#18181C] border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 overflow-x-auto shrink-0 select-none no-scrollbar">

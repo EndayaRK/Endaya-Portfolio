@@ -5,10 +5,14 @@ export default function AmbientBackground() {
       aria-hidden="true"
     >
       {/* ── Monochrome SVG Background Texture System ── */}
-      {/* Dark Mode: opacity-[0.055] on deep charcoal (#0A0A0C)
-          Light Mode: opacity-[0.045] invert on Warm Studio Cream (#FBF9F5) */}
+      {/* Dark Mode (unchanged): inverted-free pattern at opacity 0.055 on deep charcoal.
+          Light Mode: the pattern's own four gray tones (#1c1c1c → #cbcbcb) are kept
+          un-inverted and multiplied onto Warm Studio Cream, so darker tiles read clearly
+          while lighter tiles stay faint — graded contrast instead of a flat opacity bump.
+          (Previously `invert` turned the darkest tiles near-white, making them vanish on cream.)
+          The radial mask keeps the upper-center reading zone (hero headline) clean. */}
       <div
-        className="absolute inset-0 bg-repeat bg-[length:720px_480px] bg-center opacity-[0.045] invert dark:invert-0 dark:opacity-[0.055] transition-opacity duration-300"
+        className="absolute inset-0 bg-repeat bg-[length:720px_480px] bg-center opacity-[0.085] mix-blend-multiply dark:mix-blend-normal dark:opacity-[0.055] transition-opacity duration-300"
         style={{
           backgroundImage: "url('/background-pattern.svg')",
           maskImage: "radial-gradient(circle at 50% 30%, transparent 20%, black 90%)",

@@ -1,8 +1,9 @@
 import type { MouseEvent } from "react";
-import { ArrowUp, ArrowUpRight, Check, Copy } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpRight, Check, Copy } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { profile } from "../data";
 import { EASE_OUT_EXPO, scrollToSection } from "../motion";
+import ContactMessage from "./ContactMessage";
 
 type FooterProps = {
   onCopyEmail: () => void;
@@ -157,7 +158,7 @@ export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
               </motion.div>
             </div>
 
-            {/* Functional Actions: Copy Email & Open Mail Client */}
+            {/* Functional Action: Copy Email (Gmail compose is handled by the message form below) */}
             <motion.div
               initial={reduce ? false : { opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -186,17 +187,6 @@ export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
                   </>
                 )}
               </button>
-
-              <a
-                href={`mailto:${profile.email}`}
-                className="group inline-flex items-center gap-2 text-xs sm:text-sm font-medium px-6 py-3.5 rounded-full border border-black/15 dark:border-white/15 text-ink hover:border-ink dark:hover:border-white transition-colors"
-              >
-                <span>Open Mail Client</span>
-                <ArrowUpRight
-                  size={14}
-                  className="opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
-                />
-              </a>
             </motion.div>
           </div>
 
@@ -215,8 +205,13 @@ export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
           />
         </div>
 
-        {/* ── 3. Structured 4-Column Horizontal Contact Information Layout ── */}
-        <div className="pt-10 lg:pt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 items-start">
+        {/* ── 2b. Collaboration Inquiry & Leave a Message ── */}
+        <ContactMessage />
+
+        <div aria-hidden="true" className="h-px w-full bg-black/10 dark:bg-white/10" />
+
+        {/* ── 3. Structured Horizontal Contact Information Layout ── */}
+        <div className="pt-10 lg:pt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10 items-start">
           {/* GitHub */}
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 12 }}
@@ -325,6 +320,54 @@ export default function Footer({ onCopyEmail, emailCopied }: FooterProps) {
             <p className="font-body text-sm sm:text-[15px] text-muted">
               {profile.location}
             </p>
+          </motion.div>
+
+          {/* Résumé — view in browser vs. download */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{
+              duration: reduce ? 0 : 0.68,
+              delay: reduce ? 0 : 0.62,
+              ease: EASE_OUT_EXPO,
+            }}
+            className="space-y-2"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted block">
+              Résumé
+            </span>
+            <div className="flex items-center gap-4 text-sm sm:text-base">
+              <a
+                href={profile.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View résumé (opens PDF in a new tab)"
+                className="group inline-flex items-center gap-1 font-display font-medium text-ink"
+              >
+                <span className="relative">
+                  View
+                  <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 group-hover:scale-x-100" />
+                </span>
+                <ArrowUpRight
+                  size={14}
+                  className="text-muted group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                />
+              </a>
+              <span aria-hidden="true" className="h-3.5 w-px bg-black/15 dark:bg-white/15" />
+              <a
+                href={profile.resume}
+                download={profile.resumeDownloadName}
+                aria-label="Download résumé as PDF"
+                className="group inline-flex items-center gap-1 font-display font-medium text-muted hover:text-ink transition-colors"
+              >
+                Download
+                <ArrowDown
+                  size={14}
+                  className="group-hover:translate-y-0.5 transition-transform"
+                />
+              </a>
+            </div>
           </motion.div>
         </div>
 

@@ -428,7 +428,7 @@ export default function Certificates() {
               {/* Top & Bottom Depth Fade Masks */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute top-0 left-0 right-0 h-12 z-20 bg-gradient-to-b from-band-primary via-band-primary/70 to-transparent"
+                className="pointer-events-none absolute top-0 left-0 right-0 h-4 z-20 bg-gradient-to-b from-band-primary to-transparent"
               />
               <div
                 aria-hidden="true"
@@ -447,7 +447,7 @@ export default function Certificates() {
                   activeCert ? `cred-option-${activeCert.id}` : undefined
                 }
                 style={{ perspective: "900px" }}
-                className="relative max-h-[380px] sm:max-h-[460px] lg:max-h-[520px] overflow-y-auto py-[155px] sm:py-[195px] lg:py-[225px] pr-1 scrollbar-none"
+                className="relative max-h-[380px] sm:max-h-[460px] lg:max-h-[520px] overflow-y-auto py-2 pr-1 scrollbar-none"
               >
                 {visibleCertificates.map((cert, index) => {
                   const isSelected = index === safeActiveIndex;
