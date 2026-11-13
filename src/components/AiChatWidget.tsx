@@ -94,29 +94,49 @@ export default function AiChatWidget({
   const inquiryStartMsgCountRef = useRef(0);
   const lastPromptRef = useRef("");
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isNearBottomRef = useRef(true);
+  const forceScrollRef = useRef(false);
 
-  // Auto-scroll to bottom of chat
+  // Scroll only the chat container (never the outer document)
   const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
-    messagesEndRef.current?.scrollIntoView({ behavior });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior });
+  };
+
+  const handleMessagesScroll = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    isNearBottomRef.current = distanceFromBottom < 72;
   };
 
   useEffect(() => {
     if (isOpen) {
-      scrollToBottom("auto");
-      const timer = window.setTimeout(() => {
+      isNearBottomRef.current = true;
+      const scrollTimer = window.setTimeout(() => {
+        scrollToBottom("auto");
+      }, 20);
+      const focusTimer = window.setTimeout(() => {
         inputRef.current?.focus();
       }, 150);
-      return () => clearTimeout(timer);
+      return () => {
+        window.clearTimeout(scrollTimer);
+        window.clearTimeout(focusTimer);
+      };
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    if (forceScrollRef.current || isNearBottomRef.current) {
       scrollToBottom("smooth");
+      forceScrollRef.current = false;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, isOpen]);
 
   // Escape key closes chat
   useEffect(() => {
@@ -153,6 +173,7 @@ export default function AiChatWidget({
       }),
     };
 
+    forceScrollRef.current = true;
     setMessages((prev) => [...prev, userMsg]);
     setInputVal("");
     setIsLoading(true);
@@ -263,7 +284,8 @@ export default function AiChatWidget({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 15, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[390px] h-[520px] rounded-3xl bg-[#FFFFFF] dark:bg-[#141416] border border-black/10 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden select-none font-sans"
+            data-lenis-prevent
+            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[390px] h-[520px] max-h-[calc(100dvh-7.5rem)] rounded-3xl bg-[#FFFFFF] dark:bg-[#141416] border border-black/10 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden font-sans"
             style={{
               boxShadow:
                 "0 20px 45px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.1)",
@@ -313,8 +335,14 @@ export default function AiChatWidget({
               </button>
             </div>
 
-            {/* ── Message Thread Body ── */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#FBF9F5]/40 dark:bg-[#0E0E10]/40">
+            {/* ── Message Thread Body (Independently scrollable, contained from page scroll) ── */}
+            <div
+              ref={messagesContainerRef}
+              onScroll={handleMessagesScroll}
+              data-lenis-prevent
+              className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y p-4 space-y-3.5 bg-[#FBF9F5]/40 dark:bg-[#0E0E10]/40 select-text"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
               {messages.map((msg) => {
                 const isAi = msg.sender === "ai";
                 return (
@@ -369,8 +397,6 @@ export default function AiChatWidget({
                   </div>
                 </div>
               )}
-
-              <div ref={messagesEndRef} />
             </div>
 
             {/* ── Collaboration Inquiry Context Bar (only while an inquiry is active) ── */}
