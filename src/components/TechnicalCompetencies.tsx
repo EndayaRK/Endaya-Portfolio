@@ -346,11 +346,9 @@ export default function TechnicalCompetencies({
                   />
 
                   <div className="space-y-8">
-                    {/* Oversized Stage Number & Progression Node */}
-                    <div
-                      data-how-num={idx}
-                      className="flex items-baseline justify-between gap-4"
-                    >
+                    {/* Single Oversized Stage Number (sole numbering system) */}
+                    <div data-how-num={idx} className="flex items-baseline">
+                      <span className="sr-only">Stage </span>
                       <span
                         className={`font-display text-[clamp(2.5rem,3.8vw,3.75rem)] font-semibold tracking-[-0.04em] leading-none tabular-nums transition-all duration-300 ${
                           isActive
@@ -360,10 +358,7 @@ export default function TechnicalCompetencies({
                       >
                         {stage.number}
                       </span>
-
-                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-                        Stage {stage.number} / 04
-                      </span>
+                      <span className="sr-only"> of 04</span>
                     </div>
 
                     {/* Stage Heading & Core Description */}

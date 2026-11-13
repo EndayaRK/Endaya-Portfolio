@@ -15,9 +15,12 @@ export const profile = {
   status: "System Development · Full-Stack",
   availability: "Available for immediate start",
   email: "endayarhonkelly@gmail.com",
-  phone: "0946 220 1087",
+  phone: "+63 946 220 1087",
   linkedin: "https://linkedin.com/in/rhon-kelly-endaya-a91782391",
   github: "https://github.com/EndayaRK",
+  /** Existing résumé asset in /public (served at site root). */
+  resume: "/resume.pdf",
+  resumeDownloadName: "Rhon-Kelly-Endaya-Resume.pdf",
 };
 
 export const professionalOverview = [

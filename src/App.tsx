@@ -12,12 +12,28 @@ import Footer from "./components/Footer";
 import Toast from "./components/Toast";
 import AiChatWidget from "./components/AiChatWidget";
 import { profile } from "./data";
+import { OPEN_AI_INQUIRY_EVENT, type CollaborationInquiry } from "./inquiry";
 
 export default function App() {
   const [emailCopied, setEmailCopied] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [highlightedProjectIds, setHighlightedProjectIds] = useState<string[] | null>(null);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [pendingInquiry, setPendingInquiry] = useState<CollaborationInquiry | null>(null);
+  const [inquiryRequestId, setInquiryRequestId] = useState(0);
+
+  // Contact section → existing AI assistant handoff (no second AI integration)
+  useEffect(() => {
+    function handleOpenAiInquiry(e: Event) {
+      const detail = (e as CustomEvent<CollaborationInquiry>).detail;
+      if (!detail) return;
+      setPendingInquiry(detail);
+      setInquiryRequestId((id) => id + 1);
+      setIsAiChatOpen(true);
+    }
+    window.addEventListener(OPEN_AI_INQUIRY_EVENT, handleOpenAiInquiry);
+    return () => window.removeEventListener(OPEN_AI_INQUIRY_EVENT, handleOpenAiInquiry);
+  }, []);
 
   // Global shortcut: Cmd+K / Ctrl+K opens AI chatbot
   useEffect(() => {
@@ -118,6 +134,8 @@ export default function App() {
         <AiChatWidget
           isOpen={isAiChatOpen}
           onOpenChange={setIsAiChatOpen}
+          pendingInquiry={pendingInquiry}
+          inquiryRequestId={inquiryRequestId}
         />
       </div>
     </SmoothScrollProvider>

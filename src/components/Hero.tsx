@@ -179,22 +179,43 @@ export default function Hero() {
                   </span>
                 </a>
 
-                <a
-                  href="/resume.pdf"
-                  download="Rhon-Kelly-Endaya-Resume.pdf"
-                  className="group inline-flex items-center gap-2 text-sm font-semibold text-ink"
-                >
-                  <span className="relative">
-                    Download résumé
-                    <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left bg-ink/30 transition-transform duration-300 group-hover:scale-x-0" />
-                    <span className="absolute left-0 -bottom-0.5 h-px w-full origin-right scale-x-0 bg-ink transition-transform duration-300 delay-100 group-hover:origin-left group-hover:scale-x-100" />
-                  </span>
-                  <ArrowDown
-                    size={14}
-                    strokeWidth={2.25}
-                    className="transition-transform duration-300 group-hover:translate-y-0.5"
-                  />
-                </a>
+                {/* Résumé: view in the browser's native PDF viewer vs. download */}
+                <div className="flex items-center gap-5">
+                  <a
+                    href={profile.resume}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="View résumé (opens PDF in a new tab)"
+                    className="group inline-flex items-center gap-1.5 text-sm font-semibold text-ink"
+                  >
+                    <span className="relative">
+                      View résumé
+                      <span className="absolute left-0 -bottom-0.5 h-px w-full origin-left bg-ink/30 transition-transform duration-300 group-hover:scale-x-0" />
+                      <span className="absolute left-0 -bottom-0.5 h-px w-full origin-right scale-x-0 bg-ink transition-transform duration-300 delay-100 group-hover:origin-left group-hover:scale-x-100" />
+                    </span>
+                    <ArrowUpRight
+                      size={14}
+                      strokeWidth={2.25}
+                      className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </a>
+
+                  <span className="h-3.5 w-px bg-ink/15" aria-hidden="true" />
+
+                  <a
+                    href={profile.resume}
+                    download={profile.resumeDownloadName}
+                    aria-label="Download résumé as PDF"
+                    className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-ink transition-colors"
+                  >
+                    Download
+                    <ArrowDown
+                      size={14}
+                      strokeWidth={2.25}
+                      className="transition-transform duration-300 group-hover:translate-y-0.5"
+                    />
+                  </a>
+                </div>
               </motion.div>
 
               {/* Channels & Availability */}
