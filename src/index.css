@@ -101,6 +101,29 @@ body {
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* ─── Opening Sequence ("The Assembly") — theme-aware materials ─── */
+
+.rk-loader {
+  /* Light: warm cream atmosphere, charcoal RK letters, warm ivory sheen */
+  --rk-ambient: rgba(255, 255, 255, 0.65);
+  --rk-sheen: rgba(251, 249, 245, 0.55);
+}
+
+.dark .rk-loader {
+  /* Dark: deep charcoal atmosphere, soft ivory RK letters, crisp highlight sheen */
+  --rk-ambient: rgba(255, 255, 255, 0.04);
+  --rk-sheen: rgba(255, 255, 255, 0.45);
+}
+
+/* Emblem asset is white-on-transparent: charcoal in light mode, ivory in dark */
+.rk-loader-logo {
+  filter: brightness(0);
+}
+
+.dark .rk-loader-logo {
+  filter: none;
+}
+
 /* ─── Heavy Circular Wipe Theme Transition ─── */
 
 /* Freeze individual CSS transitions during snapshot capture & circular reveal
