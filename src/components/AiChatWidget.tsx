@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   AlertCircle,
   ArrowRight,
-  MessageSquare,
+  ArrowUp,
+  ArrowUpRight,
+  Check,
+  Copy,
+  Maximize2,
+  Minimize2,
+  Minus,
   RotateCcw,
-  Send,
-  Sparkles,
   X,
 } from "lucide-react";
+import { EASE_OUT_EXPO } from "../motion";
 import {
   INQUIRY_CONTINUE_TO_FORM_EVENT,
   type CollaborationInquiry,
@@ -41,29 +46,162 @@ interface ChatMessage {
   timestamp: string;
 }
 
-const INITIAL_MESSAGES: ChatMessage[] = [
+const SUGGESTED_PROMPTS = [
   {
-    id: "welcome-1",
-    sender: "ai",
-    text: "Hi! I'm Rhon's portfolio assistant. Ask me anything about his full-stack projects, tech stack, or internship availability!",
-    timestamp: "Just now",
+    label: "Explore my projects",
+    prompt:
+      "Walk me through Rhon's selected projects—PalengkeHub, EventPulse, and Auto Avenue IMS—and his specific role in each.",
+  },
+  {
+    label: "My technical experience",
+    prompt:
+      "What is Rhon's primary tech stack and engineering background across frontend, backend, and databases?",
+  },
+  {
+    label: "Discuss a collaboration",
+    prompt:
+      "I'm interested in collaborating on a project or discussing an internship opportunity. How can Rhon contribute?",
   },
 ];
 
-const SUGGESTION_CHIPS = [
-  {
-    label: "🛠️ Tech Stack",
-    prompt: "What is Rhon's primary tech stack and engineering background?",
-  },
-  {
-    label: "📱 PalengkeHub",
-    prompt: "Tell me about the PalengkeHub project and Rhon's specific role.",
-  },
-  {
-    label: "💼 Internship Status",
-    prompt: "Is Rhon actively seeking software development internship opportunities?",
-  },
-];
+/* ── Lightweight Editorial Markdown Renderer with Progressive Block Reveal ── */
+function renderInlineFormatting(text: string): React.ReactNode[] {
+  const tokens = text.split(/(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g);
+  return tokens.map((tok, i) => {
+    if (!tok) return null;
+    if (tok.startsWith("`") && tok.endsWith("`") && tok.length > 2) {
+      return (
+        <code
+          key={i}
+          className="font-mono text-[11.5px] px-1.5 py-0.5 rounded bg-black/[0.06] dark:bg-white/[0.08] text-ink"
+        >
+          {tok.slice(1, -1)}
+        </code>
+      );
+    }
+    if (tok.startsWith("**") && tok.endsWith("**") && tok.length > 4) {
+      return (
+        <strong key={i} className="font-semibold text-ink">
+          {tok.slice(2, -2)}
+        </strong>
+      );
+    }
+    const linkMatch = tok.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      return (
+        <a
+          key={i}
+          href={linkMatch[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4 decoration-ink/35 hover:decoration-ink text-ink transition-colors"
+        >
+          {linkMatch[1]}
+        </a>
+      );
+    }
+    return <React.Fragment key={i}>{tok}</React.Fragment>;
+  });
+}
+
+function FormattedResponse({
+  text,
+  animateBlocks,
+  reduceMotion,
+}: {
+  text: string;
+  animateBlocks: boolean;
+  reduceMotion: boolean;
+}) {
+  const segments = text.split(/(```[\s\S]*?```)/g);
+  let blockCounter = 0;
+
+  const wrapBlock = (node: React.ReactNode, key: string) => {
+    const idx = blockCounter++;
+    if (!animateBlocks || reduceMotion) {
+      return <React.Fragment key={key}>{node}</React.Fragment>;
+    }
+    return (
+      <motion.div
+        key={key}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.32,
+          delay: Math.min(idx * 0.055, 0.22),
+          ease: EASE_OUT_EXPO,
+        }}
+      >
+        {node}
+      </motion.div>
+    );
+  };
+
+  return (
+    <div className="space-y-3 font-body text-[13.5px] leading-[1.68] text-ink/90">
+      {segments.map((segment, idx) => {
+        const trimmed = segment.trim();
+        if (!trimmed) return null;
+
+        if (trimmed.startsWith("```") && trimmed.endsWith("```")) {
+          const lines = trimmed.slice(3, -3).trim().split("\n");
+          const firstLine = lines[0]?.trim() ?? "";
+          const hasLang = /^[a-zA-Z0-9_-]+$/.test(firstLine) && lines.length > 1;
+          const codeBody = hasLang ? lines.slice(1).join("\n") : lines.join("\n");
+
+          return wrapBlock(
+            <pre
+              data-lenis-prevent
+              className="overflow-x-auto rounded-lg border border-black/[0.08] dark:border-white/[0.08] bg-[#F3EFEA] dark:bg-[#0D0D10] p-3 font-mono text-[11.5px] leading-[1.6] text-ink"
+            >
+              <code>{codeBody}</code>
+            </pre>,
+            `code-${idx}`
+          );
+        }
+
+        const blocks = trimmed.split(/\n{2,}/);
+        return (
+          <React.Fragment key={idx}>
+            {blocks.map((block, bIdx) => {
+              const lines = block
+                .split("\n")
+                .map((l) => l.trim())
+                .filter(Boolean);
+              if (lines.length === 0) return null;
+
+              const isList = lines.every((l) => /^([-*•]|\d+\.)\s+/.test(l));
+              if (isList) {
+                return wrapBlock(
+                  <ul className="space-y-1.5 pl-4 border-l border-black/10 dark:border-white/10">
+                    {lines.map((line, lIdx) => (
+                      <li
+                        key={lIdx}
+                        className="text-[13.5px] leading-[1.65] text-ink/90"
+                      >
+                        {renderInlineFormatting(
+                          line.replace(/^([-*•]|\d+\.)\s+/, "")
+                        )}
+                      </li>
+                    ))}
+                  </ul>,
+                  `list-${idx}-${bIdx}`
+                );
+              }
+
+              return wrapBlock(
+                <p className="whitespace-pre-line">
+                  {renderInlineFormatting(block)}
+                </p>,
+                `p-${idx}-${bIdx}`
+              );
+            })}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function AiChatWidget({
   isOpen: controlledIsOpen,
@@ -71,8 +209,10 @@ export default function AiChatWidget({
   pendingInquiry = null,
   inquiryRequestId = 0,
 }: AiChatWidgetProps) {
+  const reduceMotion = useReducedMotion() ?? false;
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const isOpen =
+    controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
 
   const setIsOpen = (next: boolean) => {
     if (onOpenChange) {
@@ -82,12 +222,15 @@ export default function AiChatWidget({
     }
   };
 
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputVal, setInputVal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Active collaboration inquiry context: sent with every message while present,
-  // because /api/chat is stateless (single-turn) by design.
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Active collaboration inquiry context: sent with every message while present
   const [activeInquiry, setActiveInquiry] =
     useState<CollaborationInquiry | null>(null);
   const lastInquiryIdRef = useRef(0);
@@ -95,7 +238,8 @@ export default function AiChatWidget({
   const lastPromptRef = useRef("");
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const isNearBottomRef = useRef(true);
   const forceScrollRef = useRef(false);
 
@@ -114,15 +258,22 @@ export default function AiChatWidget({
     isNearBottomRef.current = distanceFromBottom < 72;
   };
 
+  const adjustTextareaHeight = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
+
   useEffect(() => {
     if (isOpen) {
+      setIsMinimized(false);
       isNearBottomRef.current = true;
       const scrollTimer = window.setTimeout(() => {
         scrollToBottom("auto");
       }, 20);
       const focusTimer = window.setTimeout(() => {
         inputRef.current?.focus();
-      }, 150);
+      }, 160);
       return () => {
         window.clearTimeout(scrollTimer);
         window.clearTimeout(focusTimer);
@@ -133,22 +284,39 @@ export default function AiChatWidget({
   useEffect(() => {
     if (!isOpen) return;
     if (forceScrollRef.current || isNearBottomRef.current) {
-      scrollToBottom("smooth");
+      scrollToBottom(reduceMotion ? "auto" : "smooth");
       forceScrollRef.current = false;
     }
-  }, [messages, isLoading, isOpen]);
+  }, [messages, isLoading, isOpen, reduceMotion]);
 
-  // Escape key closes chat
+  const handleClose = () => {
+    setIsMinimized(false);
+    setIsOpen(false);
+    window.setTimeout(() => {
+      triggerRef.current?.focus({ preventScroll: true });
+    }, 40);
+  };
+
+  const handleMinimize = () => {
+    setIsMinimized(true);
+    setIsOpen(false);
+    window.setTimeout(() => {
+      triggerRef.current?.focus({ preventScroll: true });
+    }, 40);
+  };
+
+  // Escape key closes chat and restores focus
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
+        handleClose();
       }
     }
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Send message to /api/chat (existing Gemini integration; key stays server-side)
@@ -176,6 +344,9 @@ export default function AiChatWidget({
     forceScrollRef.current = true;
     setMessages((prev) => [...prev, userMsg]);
     setInputVal("");
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
     setIsLoading(true);
     setError(null);
 
@@ -221,13 +392,15 @@ export default function AiChatWidget({
 
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
-      setError(err?.message || "Failed to reach AI assistant. Please try again.");
+      setError(
+        err?.message || "Failed to reach AI assistant. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleKeyDownInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDownInput = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -254,7 +427,6 @@ export default function AiChatWidget({
   }, [inquiryRequestId, pendingInquiry]);
 
   const handleContinueToForm = () => {
-    // Include any follow-up clarifications the visitor typed during the AI session
     const sessionMessages = messages.slice(inquiryStartMsgCountRef.current + 1);
     const visitorFollowUps = sessionMessages
       .filter((m) => m.sender === "user")
@@ -271,253 +443,450 @@ export default function AiChatWidget({
         detail: { refinedDescription },
       })
     );
+    setIsMinimized(false);
     setIsOpen(false);
   };
 
+  const handleResetConversation = () => {
+    if (isLoading) return;
+    setMessages([]);
+    setError(null);
+    setActiveInquiry(null);
+  };
+
+  const handleCopyMessage = async (id: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      window.setTimeout(() => {
+        setCopiedId((prev) => (prev === id ? null : prev));
+      }, 2000);
+    } catch {
+      /* ignore clipboard error */
+    }
+  };
+
+  const hasConversation = messages.length > 0 || isLoading || !!error;
+  const lastAiMessageId = [...messages]
+    .reverse()
+    .find((m) => m.sender === "ai")?.id;
+
   return (
     <>
-      {/* ── Messenger Popover Window ── */}
+      {/* ── Editorial AI Workspace Panel ── */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 15, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            data-lenis-prevent
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[390px] h-[520px] max-h-[calc(100dvh-7.5rem)] rounded-3xl bg-[#FFFFFF] dark:bg-[#141416] border border-black/10 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden font-sans"
-            style={{
-              boxShadow:
-                "0 20px 45px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.1)",
+          <motion.aside
+            role="dialog"
+            aria-label="Portfolio Assistant"
+            initial={
+              reduceMotion
+                ? { opacity: 0 }
+                : {
+                    opacity: 0,
+                    y: 18,
+                    scale: 0.94,
+                    rotateX: 5,
+                    transformPerspective: 1100,
+                  }
+            }
+            animate={
+              reduceMotion
+                ? { opacity: 1 }
+                : {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    rotateX: 0,
+                    transformPerspective: 1100,
+                  }
+            }
+            exit={
+              reduceMotion
+                ? { opacity: 0 }
+                : {
+                    opacity: 0,
+                    y: isMinimized ? 10 : 16,
+                    scale: isMinimized ? 0.92 : 0.95,
+                    rotateX: 4,
+                    transformPerspective: 1100,
+                  }
+            }
+            transition={{
+              duration: reduceMotion ? 0.12 : 0.34,
+              ease: EASE_OUT_EXPO,
             }}
+            style={{
+              transformOrigin: "bottom right",
+              boxShadow:
+                "0 28px 70px -18px rgba(0, 0, 0, 0.22), 0 10px 28px -10px rgba(0, 0, 0, 0.12)",
+            }}
+            data-lenis-prevent
+            className={`fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-50 flex flex-col overflow-hidden rounded-2xl bg-[#FBF9F5] dark:bg-[#111114] border border-black/[0.1] dark:border-white/[0.1] text-ink transition-[width,height] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              isExpanded
+                ? "w-[calc(100vw-2rem)] sm:w-[540px] lg:w-[600px] h-[min(680px,calc(100dvh-5.5rem))]"
+                : "w-[calc(100vw-2rem)] sm:w-[410px] h-[min(560px,calc(100dvh-6.5rem))]"
+            }`}
           >
-            {/* ── Header Bar ── */}
-            <div className="px-4 py-3.5 bg-[#FAF9F6] dark:bg-[#1A1A1E] border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
-                {/* Avatar with live dot */}
-                <div className="relative">
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-surface-strong flex items-center justify-center shadow-xs">
-                    <img
-                      src="/formalpic.png"
-                      alt="Rhon Kelly Endaya"
-                      className="w-full h-full object-cover object-top"
-                      onError={(e) => {
-                        // Fallback initials
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                    <span className="font-bold text-xs text-ink">RE</span>
-                  </div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#1A1A1E]" />
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="font-bold text-xs sm:text-sm text-ink leading-tight">
-                      Rhon's AI Assistant
-                    </h3>
-                    <Sparkles size={11} className="text-amber-500 shrink-0" />
-                  </div>
-                  <p className="text-[10px] text-muted leading-tight mt-0.5">
-                    Active now · Powered by Gemini
-                  </p>
-                </div>
+            {/* ── Compact Editorial Header ── */}
+            <header className="px-5 py-3.5 border-b border-black/[0.08] dark:border-white/[0.08] bg-[#FBF9F5] dark:bg-[#111114] flex items-center justify-between gap-4 shrink-0 select-none">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span
+                  aria-hidden="true"
+                  className={`h-1.5 w-1.5 rounded-full bg-ink/75 shrink-0 transition-transform duration-300 ${
+                    isLoading ? "scale-125 animate-pulse" : ""
+                  }`}
+                />
+                <h2 className="font-display text-[13px] font-semibold tracking-[-0.01em] text-ink truncate">
+                  Portfolio Assistant
+                </h2>
               </div>
 
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="Close chat"
-                className="w-7 h-7 rounded-full border border-black/5 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-muted hover:text-ink transition-colors cursor-pointer"
-              >
-                <X size={14} />
-              </button>
-            </div>
+              <div className="flex items-center gap-1 shrink-0">
+                {hasConversation && (
+                  <button
+                    type="button"
+                    onClick={handleResetConversation}
+                    disabled={isLoading}
+                    aria-label="Reset conversation"
+                    title="Reset"
+                    className="w-7 h-7 rounded-md inline-flex items-center justify-center text-muted hover:text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.05] active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
+                  >
+                    <RotateCcw size={13} strokeWidth={1.8} />
+                  </button>
+                )}
 
-            {/* ── Message Thread Body (Independently scrollable, contained from page scroll) ── */}
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded((prev) => !prev)}
+                  aria-label={
+                    isExpanded ? "Restore panel size" : "Expand workspace"
+                  }
+                  title={isExpanded ? "Restore size" : "Expand"}
+                  className="hidden sm:inline-flex w-7 h-7 rounded-md items-center justify-center text-muted hover:text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.05] active:scale-95 transition-all cursor-pointer"
+                >
+                  {isExpanded ? (
+                    <Minimize2 size={13} strokeWidth={1.8} />
+                  ) : (
+                    <Maximize2 size={13} strokeWidth={1.8} />
+                  )}
+                </button>
+
+                {hasConversation && (
+                  <button
+                    type="button"
+                    onClick={handleMinimize}
+                    aria-label="Minimize assistant"
+                    title="Minimize"
+                    className="w-7 h-7 rounded-md inline-flex items-center justify-center text-muted hover:text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.05] active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Minus size={14} strokeWidth={1.8} />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  aria-label="Close assistant"
+                  title="Close"
+                  className="w-7 h-7 rounded-md inline-flex items-center justify-center text-muted hover:text-ink hover:bg-black/[0.04] dark:hover:bg-white/[0.05] active:scale-95 transition-all cursor-pointer"
+                >
+                  <X size={15} strokeWidth={1.8} />
+                </button>
+              </div>
+            </header>
+
+            {/* ── Conversation Canvas ── */}
             <div
               ref={messagesContainerRef}
               onScroll={handleMessagesScroll}
               data-lenis-prevent
-              className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y p-4 space-y-3.5 bg-[#FBF9F5]/40 dark:bg-[#0E0E10]/40 select-text"
+              className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y select-text"
               style={{ WebkitOverflowScrolling: "touch" }}
             >
-              {messages.map((msg) => {
-                const isAi = msg.sender === "ai";
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col ${isAi ? "items-start" : "items-end"}`}
-                  >
-                    <div
-                      className={`p-3 text-xs leading-relaxed max-w-[85%] transition-all ${
-                        isAi
-                          ? "rounded-2xl rounded-tl-sm bg-[#F1EFEA] dark:bg-[#1F1F23] text-[#1A1A18] dark:text-[#F3F3F5] shadow-2xs border border-black/5 dark:border-white/5"
-                          : "rounded-2xl rounded-tr-sm bg-[#0F0F11] dark:bg-[#38373E] text-white shadow-2xs"
-                      }`}
-                    >
-                      <p className="whitespace-pre-line">{msg.text}</p>
-                    </div>
-                    <span className="text-[9px] text-muted/60 mt-1 px-1 font-mono">
-                      {msg.timestamp}
-                    </span>
+              {!hasConversation ? (
+                /* ── Intentional Editorial Welcome State ── */
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.34,
+                    delay: reduceMotion ? 0 : 0.05,
+                    ease: EASE_OUT_EXPO,
+                  }}
+                  className="h-full flex flex-col justify-between px-6 py-8"
+                >
+                  <div className="space-y-3 pt-4">
+                    <h3 className="font-display text-[23px] sm:text-[25px] font-semibold tracking-[-0.03em] leading-[1.12] text-ink">
+                      What would you like to know?
+                    </h3>
+                    <p className="font-body text-[13.5px] leading-[1.65] text-muted max-w-[30ch]">
+                      Explore my projects, technical experience, or discuss a
+                      potential collaboration.
+                    </p>
                   </div>
-                );
-              })}
 
-              {/* Loading Typing Indicator */}
-              {isLoading && (
-                <div className="flex items-start">
-                  <div className="rounded-2xl rounded-tl-sm bg-[#F1EFEA] dark:bg-[#1F1F23] p-3 text-xs flex items-center gap-1.5 shadow-2xs border border-black/5 dark:border-white/5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" />
-                    <span className="text-[10px] text-muted ml-1 font-medium">
-                      Thinking...
-                    </span>
+                  <div className="divide-y divide-black/[0.08] dark:divide-white/[0.08] border-y border-black/[0.08] dark:border-white/[0.08]">
+                    {SUGGESTED_PROMPTS.map((item, idx) => (
+                      <motion.button
+                        key={item.label}
+                        type="button"
+                        disabled={isLoading}
+                        onClick={() => handleSendMessage(item.prompt)}
+                        initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: reduceMotion ? 0 : 0.28,
+                          delay: reduceMotion ? 0 : 0.08 + idx * 0.04,
+                          ease: EASE_OUT_EXPO,
+                        }}
+                        className="group w-full py-3.5 flex items-center justify-between gap-4 text-left transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02] active:opacity-80 cursor-pointer disabled:opacity-50"
+                      >
+                        <span className="font-display text-[13.5px] font-medium text-ink/85 group-hover:text-ink group-hover:translate-x-1 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                          {item.label}
+                        </span>
+                        <ArrowUpRight
+                          size={14}
+                          className="shrink-0 text-muted/70 group-hover:text-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                        />
+                      </motion.button>
+                    ))}
                   </div>
-                </div>
-              )}
+                </motion.div>
+              ) : (
+                /* ── Structured Editorial Turn Thread ── */
+                <div className="divide-y divide-black/[0.06] dark:divide-white/[0.06]">
+                  {messages.map((msg) => {
+                    const isAi = msg.sender === "ai";
+                    const isLatestAi = isAi && msg.id === lastAiMessageId;
+                    const isCopied = copiedId === msg.id;
 
-              {/* Error Callout */}
-              {error && (
-                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-start gap-2">
-                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-[11px] leading-snug">{error}</p>
-                    <button
-                      type="button"
-                      onClick={() => handleSendMessage()}
-                      className="mt-1 text-[10px] font-bold underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <RotateCcw size={10} />
-                      Retry
-                    </button>
-                  </div>
+                    return (
+                      <motion.article
+                        key={msg.id}
+                        initial={
+                          reduceMotion
+                            ? false
+                            : { opacity: 0, y: isAi ? 6 : 4 }
+                        }
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: reduceMotion ? 0 : isAi ? 0.28 : 0.2,
+                          ease: EASE_OUT_EXPO,
+                        }}
+                        className={`group/turn relative px-6 py-5 ${
+                          isAi
+                            ? "bg-transparent"
+                            : "bg-[#F3EFEA]/65 dark:bg-[#16161B]/75"
+                        }`}
+                      >
+                        {isAi ? (
+                          <>
+                            <FormattedResponse
+                              text={msg.text}
+                              animateBlocks={isLatestAi}
+                              reduceMotion={reduceMotion}
+                            />
+                            <div className="mt-2.5 flex justify-end opacity-0 group-hover/turn:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleCopyMessage(msg.id, msg.text)
+                                }
+                                aria-label="Copy response"
+                                className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted hover:text-ink transition-colors cursor-pointer"
+                              >
+                                {isCopied ? (
+                                  <>
+                                    <Check size={11} />
+                                    <span>Copied</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy size={11} />
+                                    <span>Copy</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="font-display text-[13.5px] font-medium leading-[1.6] text-ink whitespace-pre-line">
+                            {msg.text}
+                          </p>
+                        )}
+                      </motion.article>
+                    );
+                  })}
+
+                  {/* ── Editorial Geometric Thinking Indicator (No Bouncing Dots) ── */}
+                  <AnimatePresence initial={false}>
+                    {isLoading && (
+                      <motion.div
+                        key="thinking-state"
+                        initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: reduceMotion ? 0 : 0.22 }}
+                        className="px-6 py-5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            aria-hidden="true"
+                            className="relative w-8 h-[2px] bg-black/10 dark:bg-white/10 overflow-hidden rounded-full"
+                          >
+                            <motion.span
+                              animate={
+                                reduceMotion
+                                  ? { opacity: [0.35, 0.9, 0.35] }
+                                  : { x: ["-100%", "140%"] }
+                              }
+                              transition={{
+                                duration: 1.15,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                              className="block w-1/2 h-full bg-ink rounded-full"
+                            />
+                          </div>
+                          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+                            Thinking
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* ── Monochrome Editorial Error State ── */}
+                  <AnimatePresence initial={false}>
+                    {error && (
+                      <motion.div
+                        key="error-state"
+                        initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: reduceMotion ? 0 : 0.2 }}
+                        className="px-6 py-4 bg-black/[0.03] dark:bg-white/[0.03]"
+                      >
+                        <div className="flex items-start gap-2.5 text-ink">
+                          <AlertCircle
+                            size={14}
+                            className="shrink-0 mt-0.5 text-muted"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-body text-xs leading-relaxed text-ink/90">
+                              {error}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleSendMessage()}
+                              className="mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink underline underline-offset-4 cursor-pointer"
+                            >
+                              <RotateCcw size={10} />
+                              Retry
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
 
-            {/* ── Collaboration Inquiry Context Bar (only while an inquiry is active) ── */}
+            {/* ── Active Collaboration Inquiry Bar (when handed off from Contact section) ── */}
             {activeInquiry && (
-              <div className="px-3.5 py-2.5 bg-[#FAF9F6] dark:bg-[#18181C] border-t border-black/5 dark:border-white/5 shrink-0">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="min-w-0 text-[10px] leading-snug text-muted">
-                    <span className="font-mono uppercase tracking-[0.14em] text-ink/70">
-                      Inquiry
-                    </span>{" "}
-                    <span className="truncate">
-                      {activeInquiry.categories.length > 0
-                        ? activeInquiry.categories.join(" · ")
-                        : "Project idea"}
-                    </span>
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setActiveInquiry(null)}
-                    className="shrink-0 text-[10px] text-muted hover:text-ink underline underline-offset-2 cursor-pointer"
-                  >
-                    Clear
-                  </button>
-                </div>
+              <div className="px-5 py-3 bg-[#F3EFEA] dark:bg-[#16161B] border-t border-black/[0.08] dark:border-white/[0.08] shrink-0 flex items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={handleContinueToForm}
-                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-black/15 dark:border-white/15 px-3 py-1.5 text-[11px] font-semibold text-ink hover:border-ink dark:hover:border-white transition-colors cursor-pointer"
+                  className="group inline-flex items-center gap-1.5 text-xs font-medium text-ink hover:opacity-80 transition-opacity cursor-pointer"
                 >
-                  Continue to message form
-                  <ArrowRight size={12} />
+                  <span>Continue to message form</span>
+                  <ArrowRight
+                    size={13}
+                    className="transition-transform duration-300 group-hover:translate-x-0.5"
+                  />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveInquiry(null)}
+                  className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-muted hover:text-ink transition-colors cursor-pointer"
+                >
+                  Clear
                 </button>
               </div>
             )}
 
-            {/* ── Quick Suggestion Chips (Tappable Pills) ── */}
-            <div className="px-3 pt-2 pb-1.5 bg-[#FAF9F6] dark:bg-[#18181C] border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 overflow-x-auto shrink-0 select-none no-scrollbar">
-              {SUGGESTION_CHIPS.map((chip) => (
-                <button
-                  key={chip.label}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => handleSendMessage(chip.prompt)}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-black/5 dark:border-white/10 bg-white dark:bg-[#202026] text-muted hover:text-ink hover:border-black/20 dark:hover:border-white/20 whitespace-nowrap transition-all shadow-2xs cursor-pointer active:scale-95 disabled:opacity-50"
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-
-            {/* ── Bottom Input Bar ── */}
-            <div className="p-3 bg-white dark:bg-[#141416] border-t border-black/5 dark:border-white/10 shrink-0">
-              <div className="relative flex items-center">
-                <input
+            {/* ── Spacious Editorial Message Composer ── */}
+            <div className="p-3.5 bg-[#FBF9F5] dark:bg-[#111114] border-t border-black/[0.08] dark:border-white/[0.08] shrink-0">
+              <div className="flex items-end gap-2.5 rounded-xl border border-black/[0.12] dark:border-white/[0.12] bg-[#F3EFEA]/65 dark:bg-[#18181D] focus-within:border-ink/55 dark:focus-within:border-white/50 focus-within:bg-[#F3EFEA] dark:focus-within:bg-[#1C1C22] transition-colors duration-200 pl-3.5 pr-2 py-2">
+                <textarea
                   ref={inputRef}
-                  type="text"
+                  rows={1}
                   value={inputVal}
-                  onChange={(e) => setInputVal(e.target.value)}
+                  onChange={(e) => {
+                    setInputVal(e.target.value);
+                    adjustTextareaHeight(e.target);
+                  }}
                   onKeyDown={handleKeyDownInput}
                   disabled={isLoading}
-                  placeholder="Type a message..."
-                  className="w-full pl-3.5 pr-10 py-2.5 text-xs rounded-full border border-black/10 dark:border-white/10 bg-[#F5F4F0] dark:bg-[#1E1E24] text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/20 transition-all"
+                  data-lenis-prevent
+                  placeholder="Ask anything…"
+                  className="block flex-1 resize-none bg-transparent py-0.5 font-body text-[13.5px] leading-[1.5] text-ink placeholder:text-muted/60 focus:outline-none max-h-[120px]"
                 />
                 <button
                   type="button"
                   disabled={!inputVal.trim() || isLoading}
                   onClick={() => handleSendMessage()}
                   aria-label="Send message"
-                  className="absolute right-1.5 w-7 h-7 rounded-full bg-[#1A1A18] dark:bg-[#F3F3F5] text-white dark:text-[#0A0A0C] flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all shadow-xs cursor-pointer"
+                  className="group/send h-7 w-7 rounded-lg bg-ink text-cta-primary-text inline-flex items-center justify-center disabled:opacity-20 hover:opacity-90 active:scale-90 transition-all duration-200 cursor-pointer shrink-0"
                 >
-                  <Send size={12} />
+                  <ArrowUp
+                    size={14}
+                    strokeWidth={2.2}
+                    className="transition-transform duration-200 group-hover/send:-translate-y-0.5"
+                  />
                 </button>
               </div>
             </div>
-          </motion.div>
+          </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* ── Floating Launcher Button (Bottom-Right) ── */}
+      {/* ── Understated Editorial Floating Trigger / Minimized Bar ── */}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Close AI Chat" : "Open AI Assistant"}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1A1A18] dark:bg-[#F3F3F5] text-white dark:text-[#0A0A0C] shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+        aria-label={
+          isOpen
+            ? "Close Portfolio Assistant"
+            : isMinimized
+            ? "Resume Portfolio Assistant conversation"
+            : "Open Portfolio Assistant"
+        }
+        aria-expanded={isOpen}
+        className="group fixed bottom-6 right-4 sm:right-6 z-50 h-11 px-4 rounded-full bg-[#1A1A18] dark:bg-[#F3F3F5] text-[#FBF9F5] dark:text-[#0A0A0C] border border-black/10 dark:border-white/10 shadow-xl inline-flex items-center gap-2.5 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer select-none"
         style={{
           boxShadow:
-            "0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+            "0 14px 34px -8px rgba(0, 0, 0, 0.28), 0 6px 14px -4px rgba(0, 0, 0, 0.16)",
         }}
       >
-        {/* Online Presence Indicator */}
-        <span className="w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#0A0A0C] absolute top-0.5 right-0.5 shadow-xs" />
-
-        {/* Icon Swaps */}
-        <AnimatePresence mode="wait" initial={false}>
-          {isOpen ? (
-            <motion.div
-              key="close-icon"
-              initial={{ rotate: -45, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 45, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <X size={20} strokeWidth={2.5} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat-icon"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="relative flex items-center justify-center"
-            >
-              <MessageSquare size={22} strokeWidth={2} />
-              <Sparkles
-                size={10}
-                className="absolute -top-1 -right-1 text-amber-400 dark:text-amber-600 animate-pulse"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <span
+          aria-hidden="true"
+          className={`h-1.5 w-1.5 rounded-full bg-current opacity-80 transition-transform duration-300 group-hover:scale-125 ${
+            isLoading ? "animate-pulse" : ""
+          }`}
+        />
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em]">
+          {isOpen
+            ? "Close"
+            : isMinimized && messages.length > 0
+            ? `Assistant · ${messages.length}`
+            : "Assistant"}
+        </span>
+        {isOpen && <X size={13} strokeWidth={2} />}
       </button>
     </>
   );

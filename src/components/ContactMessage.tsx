@@ -418,11 +418,8 @@ export default function ContactMessage() {
         >
           What would you like to build?
         </h3>
-        <p className="mt-3 font-body text-sm sm:text-[15px] text-muted leading-relaxed max-w-md">
-          Choose anything that fits, then describe the idea in your own words.
-        </p>
 
-        <fieldset className="mt-8">
+        <fieldset className="mt-7">
           <legend className="sr-only">Inquiry categories (select one or more)</legend>
           <ul className="flex flex-wrap gap-2.5">
             {INQUIRY_CATEGORIES.map((cat) => {
@@ -460,7 +457,7 @@ export default function ContactMessage() {
             htmlFor={`${uid}-idea`}
             className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-muted group-focus-within/field:text-ink transition-colors"
           >
-            <span>Project description (optional)</span>
+            <span>Project description</span>
             <span className="tabular-nums normal-case tracking-normal">
               {description.length}/{INQUIRY_DESCRIPTION_MAX}
             </span>
@@ -502,7 +499,6 @@ export default function ContactMessage() {
           <button
             type="button"
             onClick={discussWithAi}
-            aria-describedby={`${uid}-ai-note`}
             className={`inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors cursor-pointer ${
               hasInquiry
                 ? "text-muted hover:text-ink"
@@ -529,11 +525,6 @@ export default function ContactMessage() {
             </motion.p>
           )}
         </AnimatePresence>
-
-        <p id={`${uid}-ai-note`} className="mt-3 text-[11px] text-muted/80 leading-relaxed max-w-sm">
-          The assistant can help clarify your idea. It can&apos;t accept projects or
-          make commitments on my behalf.
-        </p>
       </motion.section>
 
       {/* ───────────── Leave a Message ───────────── */}
@@ -548,9 +539,6 @@ export default function ContactMessage() {
         >
           Leave a message
         </h3>
-        <p className="mt-3 font-body text-sm sm:text-[15px] text-muted leading-relaxed max-w-lg">
-          Your message opens as a Gmail draft, ready for you to review and send.
-        </p>
 
         <AnimatePresence initial={false}>
           {inquiryNote && (
@@ -615,7 +603,7 @@ export default function ContactMessage() {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-5">
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-5">
             <button
               type="submit"
               className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-cta-primary text-cta-primary-text pl-6 pr-2 py-2 text-sm font-semibold transition-opacity hover:opacity-90 active:scale-[0.99] cursor-pointer"
@@ -625,7 +613,6 @@ export default function ContactMessage() {
                 <ArrowUpRight size={15} strokeWidth={2.25} />
               </span>
             </button>
-            <p className="text-[11px] text-muted">All fields are required.</p>
           </div>
         </form>
 
